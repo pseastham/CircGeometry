@@ -1,0 +1,13 @@
+name = "CircGeometry"
+uuid = "afba6da3-a7b4-4783-9c8c-9db3b7935d41"
+authors = ["Patrick Eastham"]
+version = "0.1.0"
+
+[compat]
+julia = "1.3.1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
