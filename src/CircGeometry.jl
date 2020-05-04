@@ -1,7 +1,14 @@
 module CircGeometry
 
+import Random: MersenneTwister
+
 abstract type AbstractFillingObject end
 abstract type AbstractOutlineObject end
+
+export MaterialParameters,
+       OutlineCircle,
+       generate_porous_structure,
+       write_circ
 
 mutable struct Point{T}
     x::T
@@ -11,6 +18,10 @@ end
 struct OutlineCircle{T} <: AbstractOutlineObject
     radius::T
     center::Point{T}
+end
+
+struct OutlinePolygon{T} <: AbstractOutlineObject
+    pList::Vector{Point{T}}
 end
 
 struct FillingCircle{T} <: AbstractFillingObject
@@ -28,25 +39,29 @@ end
 struct PorousStructure{T}
     param::MaterialParameters{T}
     olist::Vector{FillingCircle{T}}
+    xArr::Vector{T}
+    yArr::Vector{T}
+    radiiArr::Vector{T}
 
     function PorousStructure(param::MaterialParameters{T},radiiArr::Vector{T}) where T<:Real
         olist = [FillingCircle(radiiArr[ti],Point(zero(T),zero(T))) for ti=1:param.n_objects]
-        new{T}(param, olist)
+        xArr = zeros(T,param.n_objects)
+        yArr = zeros(T,param.n_objects)
+        new{T}(param, olist, xArr, yArr,radiiArr)
     end
 end
 
 function generate_porous_structure(outline::O,material::MaterialParameters{T};log=false) where {O<:AbstractOutlineObject,T<:Real}
-
-    ideal_radius = compute_ideal_radii(outline,material)
+    ideal_radius = compute_ideal_radius(outline,material)
 
     seed = 100
-    rng = Random.MersenneTwister(seed)
-    radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.7)
+    rng = MersenneTwister(seed)
+    radiiArr = ideal_radius*(0.6*rand(rng,material.n_objects) .+ 0.7)
 
     # sort radiiArr so that biggest circles are placed first
     radiiArr = sort(radiiArr, rev=true)
 
-    ps = PorousStructure(param,radiiArr)
+    ps = PorousStructure(material,radiiArr)
 
     safeind = 1
     for ti=1:material.n_objects
@@ -61,20 +76,17 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T};lo
             # randomly choose centers
             θ = 2*pi*rand(rng)
             r = rand(rng)
-            xtemp = r*true_circle_radius*cos(θ)
-            ytemp = r*true_circle_radius*sin(θ)
+            xtemp = outline.center.x + r*outline.radius*cos(θ)
+            ytemp = outline.center.y + r*outline.radius*sin(θ)
 
             # check that small circles don't exceed exact circle + buffer
-            inside_bool = is_inside_exact_circle_buffer(
-                outer_buffer_percent,
-                xArr[ti],yArr[ti],radiiArr[ti],
-                true_circle_radius)
+            inside_bool = is_inside_outline(safeind,xtemp,ytemp,ps,outline)
             # check that circles aren't intersecting any previous circles
             if log; print('\r',"   attempt #",safeind," checking intersection..."); end
 
             intersection_bool = is_intersecting_others(
-                ti,between_buffer_percent,
-                xArr,yArr,radiiArr)
+                ti,ps.param.between_buffer_percent,
+                ps.xArr,ps.yArr,ps.radiiArr)
             safe_placement = inside_bool && !intersection_bool
             safeind += 1
             if safeind > 1000
@@ -85,42 +97,50 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T};lo
 
         ps.olist[ti].center.x = xtemp
         ps.olist[ti].center.y = ytemp
+        ps.xArr[ti] = xtemp
+        ps.yArr[ti] = ytemp
         if log; println("\n   safely placed circle #",ti); end
     end
 
-    computed_vf =compute_volume_fraction(radiiArr,true_circle_radius)
+    computed_vf = compute_volume_fraction(ps,outline)
     if log 
         println()
-        println("entered volume fraction:  ",volume_fraction)
+        println("entered volume fraction:  ",ps.param.expected_volume_fraction)
         println("computed volume fraction: ",computed_vf)
     end
 
-    # output into *.circ file format
-    run(`mkdir -p ../geometry-files`)
-    filepath = string("../geometry-files/",fileName,".circ")
+    return ps
+end
+
+function write_circ(file_name::String,ps::PorousStructure)
+    filepath = string(file_name,".circ")
     open(filepath, "w") do io
         println(io, "# nbods")
-        println(io, nbodies)
+        println(io, ps.param.n_objects)
         println(io, "# data below: radius, xc, yc for each body.")
-        for ti=1:nbodies
-            println(io, radiiArr[ti])
-            println(io, xArr[ti])
-            println(io, yArr[ti])
+        for ti=1:ps.param.n_objects
+            println(io, ps.olist[ti].radius)
+            println(io, ps.olist[ti].center.x)
+            println(io, ps.olist[ti].center.y)
         end
     end
 end
 
-function compute_ideal_radii(outline::O,material::MaterialParameters{T}) where {O<:AbstractOutlineObject,T<:Real}
-    if typeof(outline) <: OutlineCircle
-        return sqrt(outline.radius^2 * material.expected_volume_fraction / material.n_objects)
-    end
+function compute_ideal_radius(outline::OutlineCircle,material::MaterialParameters{T}) where T<:Real
+    return sqrt(outline.radius^2 * material.expected_volume_fraction / material.n_objects)
 end
 
-function is_inside_exact_circle_buffer(buffer_percent,x,y,radius,true_circle_radius)
-    buffer_radius = (1 + buffer_percent/100)*true_circle_radius
-    furthest_point = radius + sqrt(x^2 + y^2)
+function is_inside_outline(ind::Int,x::T,y::T,ps::PorousStructure{T},outline::OutlineCircle{T}) where T<:Real
+    buffer_radius = (1 + ps.param.outer_buffer_percent/100)*outline.radius
+    furthest_point = outline.radius + sqrt((x-outline.center.x)^2 + (y-outline.center.y)^2)
     return (furthest_point < buffer_radius ? true : false)
 end
+
+#function is_inside_exact_circle_buffer(buffer_percent,x,y,radius,true_circle_radius)
+#    buffer_radius = (1 + buffer_percent/100)*true_circle_radius
+#    furthest_point = radius + sqrt(x^2 + y^2)
+#    return (furthest_point < buffer_radius ? true : false)
+#end
 
 function is_intersecting_others(ind,buffer_percent,xArr,yArr,radiiArr)
     if ind > 1
@@ -153,6 +173,15 @@ function compute_volume_fraction(radiiArr,true_circle_radius)
 
     return area/true_area
 end
+function compute_volume_fraction(ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
+    true_area = 4*outline.radius^2
+    exp_area = 0.0
+    for ti=1:ps.param.n_objects
+        exp_area += 4*ps.olist[ti].radius^2
+    end
+
+    return exp_area/true_area 
+end
 
 function check_vf(volume_fraction)
     if volume_fraction > 0.8
@@ -165,6 +194,5 @@ function check_vf(volume_fraction)
             volume_fraction," is unlikely")
     end
 end
-
 
 end # module

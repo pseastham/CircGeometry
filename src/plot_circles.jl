@@ -9,7 +9,7 @@ Plots circles found in *.circ type file in ../ folder and exports to png
 """
 function visualize_circles(file_input::String)
     # read in circ file
-    circfile = string("../",file_input,".circ")
+    circfile = string(file_input)
     f         = open(circfile,"r")
     lines     = readlines(f)
     num_lines = length(lines)

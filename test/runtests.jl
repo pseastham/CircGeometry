@@ -1,6 +1,5 @@
-using CircGeometry
-using Test
+using SafeTestsets
 
-@testset "CircGeometry.jl" begin
-    # Write your own tests here.
+@time begin
+    @time @safetestset "Circle Outline Tests" begin include("circle_outline_test.jl") end
 end
