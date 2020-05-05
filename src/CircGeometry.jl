@@ -277,7 +277,7 @@ function compute_outline_area(outline::OutlinePolygon{T}) where T<:Real
     x1 = outline.pList[1].x; y1 = outline.pList[1].y
     area += x0*y1 - x1*y0
 
-    return area/2
+    return abs(area)/2
 end
 
 function check_vf(volume_fraction)
