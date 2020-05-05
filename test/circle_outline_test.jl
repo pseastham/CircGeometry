@@ -39,6 +39,6 @@ ps = generate_porous_structure(
 write_circ(circNames[3],ps)
 vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
 
-#for i=1:length(circNames)
-#    rm(string(circNames[ti],".circ"))
-#end
+for ti=1:length(circNames)
+    rm(string(circNames[ti],".circ"))
+end
