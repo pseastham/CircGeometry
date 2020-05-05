@@ -1,5 +1,7 @@
 module CircGeometry
 
+include("shuffling_functions.jl")
+
 import Random: MersenneTwister
 
 abstract type AbstractFillingObject end
@@ -18,6 +20,7 @@ end
 struct OutlineCircle{T} <: AbstractOutlineObject
     radius::T
     center::Point{T}
+    buffer_percent::T
 end
 
 struct OutlinePolygon{T} <: AbstractOutlineObject
@@ -27,11 +30,10 @@ end
 struct FillingCircle{T} <: AbstractFillingObject
     radius::T
     center::Point{T}
+    buffer_percent::T
 end
 
 struct MaterialParameters{T}
-    outer_buffer_percent::T             # percent buffer allowed for small circles to exceed exact circle
-    between_buffer_percent::T           # percent buffer allowed between small circles
     expected_volume_fraction::T
     n_objects::Int
 end
@@ -43,62 +45,64 @@ struct PorousStructure{T}
     yArr::Vector{T}
     radiiArr::Vector{T}
 
-    function PorousStructure(param::MaterialParameters{T},radiiArr::Vector{T}) where T<:Real
-        olist = [FillingCircle(radiiArr[ti],Point(zero(T),zero(T))) for ti=1:param.n_objects]
+    function PorousStructure(param::MaterialParameters{T},radiiArr::Vector{T},between_buffer::T) where T<:Real
+        olist = [FillingCircle(radiiArr[ti],Point(zero(T),zero(T)),between_buffer) for ti=1:param.n_objects]
+        xArr = zeros(T,param.n_objects)
+        yArr = zeros(T,param.n_objects)
+        new{T}(param, olist, xArr, yArr,radiiArr)
+    end
+    function PorousStructure(param::MaterialParameters{T},radiiArr::Vector{T},between_buffer::Vector{T}) where T<:Real
+        olist = [FillingCircle(radiiArr[ti],Point(zero(T),zero(T)),between_buffer[ti]) for ti=1:param.n_objects]
         xArr = zeros(T,param.n_objects)
         yArr = zeros(T,param.n_objects)
         new{T}(param, olist, xArr, yArr,radiiArr)
     end
 end
 
-function generate_porous_structure(outline::O,material::MaterialParameters{T};log=false) where {O<:AbstractOutlineObject,T<:Real}
+function generate_porous_structure(outline::O,material::MaterialParameters{T},between_buffer::T;log=false) where {O<:AbstractOutlineObject,T<:Real}
     ideal_radius = compute_ideal_radius(outline,material)
 
     seed = 100
     rng = MersenneTwister(seed)
     radiiArr = ideal_radius*(0.6*rand(rng,material.n_objects) .+ 0.7)
-
-    # sort radiiArr so that biggest circles are placed first
     radiiArr = sort(radiiArr, rev=true)
 
-    ps = PorousStructure(material,radiiArr)
+    ps = PorousStructure(material,radiiArr,between_buffer)
 
-    safeind = 1
     for ti=1:material.n_objects
         if log; println("attempting to place body #",ti,"..."); end
 
-        safe_placement = false
-
         xtemp = 0.0
         ytemp = 0.0
-        safeind = 1
+        safe_placement = false
+        attempt_ind = 1
         while !(safe_placement)
-            # randomly choose centers
-            θ = 2*pi*rand(rng)
-            r = rand(rng)
-            xtemp = outline.center.x + r*outline.radius*cos(θ)
-            ytemp = outline.center.y + r*outline.radius*sin(θ)
+            ps.xArr[ti],ps.yArr[ti] = choose_random_center(outline,rng)
+            copyArraysToCenters!(ps,ti)
 
-            # check that small circles don't exceed exact circle + buffer
-            inside_bool = is_inside_outline(safeind,xtemp,ytemp,ps,outline)
-            # check that circles aren't intersecting any previous circles
-            if log; print('\r',"   attempt #",safeind," checking intersection..."); end
-
-            intersection_bool = is_intersecting_others(
-                ti,ps.param.between_buffer_percent,
-                ps.xArr,ps.yArr,ps.radiiArr)
+            inside_bool = is_inside_outline(ps.olist[ti],outline)
+            if log; print('\r',"   attempt #",attempt_ind," checking intersection..."); end
+            intersection_bool = is_intersecting_others(ti,ps)
             safe_placement = inside_bool && !intersection_bool
-            safeind += 1
-            if safeind > 1000
+
+            marked_for_shuffling = inside_bool && intersection_bool
+            if mark_for_shuffling
+                if log; print('\r',"   attempt #",attempt_ind," shuffling..."); end
+                for i=1:10          # this should be extended or shortened depending on number of particles
+                    shuffle_objects!(ps.olist)
+                end
+                copyCentersToArrays!(ps::PorousStructure)
+                inside_bool = is_inside_outline(ps.olist[ti],outline)
+                intersection_bool = is_intersecting_others(ti,ps)
+                safe_placement = inside_bool && !intersection_bool
+            end
+
+            attempt_ind += 1
+            if attempt_ind > 1000
                 error("reached attempt threshold while trying to place body #$(ti)")
                 break
             end
         end
-
-        ps.olist[ti].center.x = xtemp
-        ps.olist[ti].center.y = ytemp
-        ps.xArr[ti] = xtemp
-        ps.yArr[ti] = ytemp
         if log; println("\n   safely placed circle #",ti); end
     end
 
@@ -130,25 +134,24 @@ function compute_ideal_radius(outline::OutlineCircle,material::MaterialParameter
     return sqrt(outline.radius^2 * material.expected_volume_fraction / material.n_objects)
 end
 
-function is_inside_outline(ind::Int,x::T,y::T,ps::PorousStructure{T},outline::OutlineCircle{T}) where T<:Real
-    buffer_radius = (1 + ps.param.outer_buffer_percent/100)*outline.radius
-    furthest_point = outline.radius + sqrt((x-outline.center.x)^2 + (y-outline.center.y)^2)
-    return (furthest_point < buffer_radius ? true : false)
+function is_inside_outline(fo::FillingCircle{T},outline::OutlineCircle{T}) where T<:Real
+    outline_buffer_radius = (1 + outline.buffer_percent/100)*outline.radius
+    furthest_point = fo.radius + sqrt((fo.center.x-outline.center.x)^2 + (fo.center.y-outline.center.y)^2)
+    return (furthest_point < outline_buffer_radius ? true : false)
 end
 
-#function is_inside_exact_circle_buffer(buffer_percent,x,y,radius,true_circle_radius)
-#    buffer_radius = (1 + buffer_percent/100)*true_circle_radius
-#    furthest_point = radius + sqrt(x^2 + y^2)
-#    return (furthest_point < buffer_radius ? true : false)
-#end
+function choose_random_center(outline::OutlineCircle{T},rng) where T<:Real
+    θ = 2*pi*rand(rng)
+    r = outline.radius*rand(rng)
+    x = outline.center.x + r*cos(θ)
+    y = outline.center.y + r*sin(θ)
+    return x,y
+end
 
-function is_intersecting_others(ind,buffer_percent,xArr,yArr,radiiArr)
+function is_intersecting_others(ind::Int,ps::PorousStructure)
     if ind > 1
         for ti = (ind-1):-1:1
-            is_intersecting = is_circle1_intersecting_circle2(
-                buffer_percent,
-                xArr[ind],yArr[ind],radiiArr[ind],
-                xArr[ti],yArr[ti],radiiArr[ti])
+            is_intersecting = is_circle1_intersecting_circle2(ps.olist[ind],ps.olist[ti])
             if is_intersecting == true
                 return true
             end
@@ -158,9 +161,14 @@ function is_intersecting_others(ind,buffer_percent,xArr,yArr,radiiArr)
     return false
 end
 
-function is_circle1_intersecting_circle2(buffer_percent,x1,y1,r1,x2,y2,r2)
-    distance = sqrt((x2-x1)^2 + (y2-y1)^2)
-    return (distance < (1 + 2*buffer_percent/100)*(r1+r2) ? true : false)
+#function is_circle1_intersecting_circle2(buffer_percent,x1,y1,r1,x2,y2,r2)
+#    distance = sqrt((x2-x1)^2 + (y2-y1)^2)
+#    return (distance < (1 + 2*buffer_percent/100)*(r1+r2) ? true : false)
+#end
+function is_circle1_intersecting_circle2(fo1::F,fo2::F) where F<:FillingCircle
+    distance = sqrt((fo2.center.x - fo1.center.x)^2 + (fo2.center.y - fo1.center.y)^2)
+    upper_limit = (1 + (fo1.buffer_percent + fo2.buffer_percent)/100)*(fo1.radius + fo2.radius)
+    return (distance < upper_limit ? true : false)
 end
 
 function compute_volume_fraction(radiiArr,true_circle_radius)
@@ -193,6 +201,27 @@ function check_vf(volume_fraction)
             "circle packing with volume_fraction = ",
             volume_fraction," is unlikely")
     end
+end
+
+function copyArraysToCenters!(ps::PorousStructure)
+    for ti=1:ps.param.n_objects
+        ps.olist[ti].center.x = ps.xArr[ti]
+        ps.olist[ti].center.y = ps.yArr[ti]
+    end
+    nothing
+end
+function copyArraysToCenters!(ps::PorousStructure,ind::Int)
+    ps.olist[ind].center.x = ps.xArr[ind]
+    ps.olist[ind].center.y = ps.yArr[ind]
+    nothing
+end
+
+function copyCentersToArrays!(ps::PorousStructure)
+    for ti=1:ps.param.n_objects
+        ps.xArr[ti] = ps.olist[ti].center.x
+        ps.yArr[ti] = ps.olist[ti].center.y
+    end
+    nothing
 end
 
 end # module
