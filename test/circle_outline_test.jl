@@ -13,7 +13,7 @@ ps = generate_porous_structure(
     outline,material,between_buffer;log=true)
 
 write_circ(circNames[1],ps)
-save_image("circle.png",ps,outline)
+#save_image("circle.png",ps,outline)
 vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
 
 # test rectangle outline
@@ -25,7 +25,7 @@ outline = OutlineRectangle(
 ps = generate_porous_structure(
     outline,material,between_buffer;log=true)
 write_circ(circNames[2],ps)
-save_image("rectangle.png",ps,outline)
+#save_image("rectangle.png",ps,outline)
 vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
 
 # test arbitrary polygon outline
@@ -39,9 +39,9 @@ outline = OutlinePolygon([
 ps = generate_porous_structure(
     outline,material,between_buffer;log=true)
 write_circ(circNames[3],ps)
-save_image("polygon.png",ps,outline)
+#save_image("polygon.png",ps,outline)
 vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
 
-#for ti=1:length(circNames)
-#    rm(string(circNames[ti],".circ"))
-#end
+for ti=1:length(circNames)
+    rm(string(circNames[ti],".circ"))
+end
