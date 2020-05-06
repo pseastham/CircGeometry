@@ -32,18 +32,19 @@ function csv_to_polygon(file_name::String)
         ind += 1
     end
 
-    subtract_off_mean!(xArr)
-    subtract_off_mean!(yArr)
+    center!(xArr,yArr)
 
     pList = [Point(xArr[ti],yArr[ti]) for ti=1:n_lines]
 
     return pList
 end
 
-function subtract_off_mean!(arr::Vector{T}) where T<:Real
-    mm = mean(arr)
-    for ti=1:length(arr)
-        arr[ti] -= mm
+function center!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
+    xCenter = maximum(xArr) - minimum(xArr)
+    yCenter = maximum(yArr) - minimum(yArr)
+    for ti=1:length(xArr)
+        xArr[ti] -= xCenter
+        yArr[ti] -= yCenter
     end
     nothing
 end
