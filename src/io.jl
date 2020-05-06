@@ -21,8 +21,6 @@ function csv_to_polygon(file_name::String)
         n_lines += 1
     end
 
-    println(n_lines)
-
     xArr = zeros(n_lines)
     yArr = zeros(n_lines)
 
