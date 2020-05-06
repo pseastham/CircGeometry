@@ -46,7 +46,7 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
         computed_vf = compute_volume_fraction(ps,outline)
         println()
         println("entered volume fraction:  ",ps.param.expected_volume_fraction)
-        println("computed volume fraction: ",round(computed_vf,digits=2))
+        println("computed volume fraction: ",round(computed_vf,digits=3))
     end
 
     return ps
