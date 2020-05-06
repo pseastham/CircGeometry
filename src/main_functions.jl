@@ -13,7 +13,7 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
         safe_placement = false
         attempt_ind = 1
         while !(safe_placement)
-            if log; print('\r',"attempting to place body #",ti," / ",ps.param.n_objects," ..."); end
+            if log; print('\r',"attempting to place body #",ti,"/",ps.param.n_objects," ..."); end
             ps.xArr[ti],ps.yArr[ti] = choose_random_center(outline,rng)
             copyArraysToCenters!(ps,ti)
 

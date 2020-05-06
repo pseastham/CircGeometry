@@ -173,7 +173,3 @@ function plot_outline!(p::Plots.Plot{Plots.GRBackend},outline::OutlinePolygon{T}
 
     nothing
 end
-
-function clear_line()
-    print('\r',"                                                   ")
-end
