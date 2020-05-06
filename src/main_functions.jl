@@ -60,15 +60,15 @@ function compute_ideal_radius(outline::O,material::MaterialParameters{T}) where 
     return sqrt(area * material.expected_volume_fraction / (pi*material.n_objects))
 end
 
-function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineCircle{T})
+function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineCircle{T}) where T<:Real
     radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.65)
     return sort(radiiArr, rev=true)
 end
-function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineRectangle{T})
+function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineRectangle{T}) where T<:Real
     radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.65)
     return sort(radiiArr, rev=true)
 end
-function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlinePolygon{T})
+function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlinePolygon{T}) where T<:Real
     radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.6)
     return sort(radiiArr, rev=true)
 end
