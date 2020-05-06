@@ -32,6 +32,7 @@ function csv_to_polygon(file_name::String)
         ind += 1
     end
 
+    rescale!(xArr,yArr)
     center!(xArr,yArr)
 
     pList = [Point(xArr[ti],yArr[ti]) for ti=1:n_lines]
@@ -45,6 +46,17 @@ function center!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
     for ti=1:length(xArr)
         xArr[ti] -= xCenter
         yArr[ti] -= yCenter
+    end
+    nothing
+end
+
+function rescale!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
+    xlength = maximum(xArr) - minimum(xArr)
+    ylength = maximum(yArr) - minimum(yArr)
+    len = minimum([xlength,ylength])
+    for ti=1:length(xArr)
+        xArr[ti] /= len
+        yArr[ti] /= len
     end
     nothing
 end
