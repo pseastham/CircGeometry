@@ -60,10 +60,12 @@ function save_image(output_name::String,circ_file::String,outline::O) where O<:A
 
     # plot circles
     for ti=1:ps.param.n_objects
+        print("\r plotting circle #$(ti)")
         plot_circle!(p,radiiArr[ti],xArr[ti],yArr[ti])
     end
 
     # plot outline
+    print("\r plotting circle #$(ti)")
     plot_outline!(p,outline)
 
     savefig(p,output_name)
@@ -163,7 +165,7 @@ function plot_outline!(p::Plots.Plot{Plots.GRBackend},outline::OutlinePolygon{T}
 
     # plot first nn lines
     nn = length(outline.pList)
-    for ti=1:nn
+    for ti=1:(nn-1)
         x[1] = outline.pList[ti].x; x[2] = outline.pList[ti+1].x
         y[1] = outline.pList[ti].y; y[2] = outline.pList[ti+1].y
         plot!(p,x,y,label="",color=:black,linestyle=:dash)
