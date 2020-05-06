@@ -23,3 +23,5 @@ Geometrie are defined by their type (circle, rectangle, or arbitrary polygon), v
 ## Examples
 
 Here are some visualizations of the circ files with accompanying "outline" (dash).
+
+"<table><tr><td><img src='img1'></td><td><img src='img2'></td><td><img src='img3'></td></tr></table>"

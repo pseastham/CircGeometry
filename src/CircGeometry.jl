@@ -18,6 +18,7 @@ export MaterialParameters,
        generate_porous_structure,
        write_circ,
        csv_to_polygon,
-       save_image
+       save_image,
+       Point
 
 end # module
