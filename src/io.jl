@@ -40,8 +40,8 @@ function csv_to_polygon(file_name::String)
 end
 
 function center!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
-    xCenter = maximum(xArr) - minimum(xArr)
-    yCenter = maximum(yArr) - minimum(yArr)
+    xCenter = 0.5*(maximum(xArr) - minimum(xArr))
+    yCenter = 0.5*(maximum(yArr) - minimum(yArr))
     for ti=1:length(xArr)
         xArr[ti] -= xCenter
         yArr[ti] -= yCenter
