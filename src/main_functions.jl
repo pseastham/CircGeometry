@@ -4,9 +4,7 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
     ideal_radius = compute_ideal_radius(outline,material)
 
     rng = MersenneTwister()
-    radiiArr = ideal_radius*(0.6*rand(rng,material.n_objects) .+ 0.7)
-    radiiArr = sort(radiiArr, rev=true)
-
+    radiiArr = create_radiiArr(ideal_radius,rng,material.n_objects,outline)
     ps = PorousStructure(material,radiiArr,between_buffer)
 
     for ti=1:material.n_objects
@@ -60,6 +58,19 @@ end
 function compute_ideal_radius(outline::O,material::MaterialParameters{T}) where {T<:Real,O<:AbstractOutlineObject}
     area = compute_outline_area(outline)
     return sqrt(area * material.expected_volume_fraction / (pi*material.n_objects))
+end
+
+function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineCircle{T})
+    radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.65)
+    return sort(radiiArr, rev=true)
+end
+function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineRectangle{T})
+    radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.65)
+    return sort(radiiArr, rev=true)
+end
+function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlinePolygon{T})
+    radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.6)
+    return sort(radiiArr, rev=true)
 end
 
 function choose_random_center(outline::OutlineCircle{T},rng) where T<:Real
