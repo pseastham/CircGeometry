@@ -1,4 +1,33 @@
-import CSV
+
+function is_inside_outline(fo::FillingCircle{T},outline::OutlineCircle{T}) where T<:Real
+  outline_buffer_radius = (1 + outline.buffer_percent/100)*outline.radius
+  furthest_point = fo.radius + sqrt((fo.center.x-outline.center.x)^2 + (fo.center.y-outline.center.y)^2)
+  return (furthest_point < outline_buffer_radius ? true : false)
+end
+function is_inside_outline(fo::FillingCircle{T},outline::OutlineRectangle{T}) where T<:Real
+  length = outline.p2.x - outline.p1.x 
+  width  = outline.p2.y - outline.p1.y
+
+  # check top
+  if (fo.center.y + fo.radius) > outline.p2.y + (outline.buffer_percent/100)*width
+      return false
+  # check bottom
+  elseif (fo.center.y - fo.radius) < outline.p1.y - (outline.buffer_percent/100)*width
+      return false
+  end
+  # check right
+  if (fo.center.x + fo.radius) > outline.p2.x + (outline.buffer_percent/100)*length
+      return false
+  # check left
+  elseif (fo.center.x - fo.radius) < outline.p1.x - (outline.buffer_percent/100)*length
+      return false
+  end
+
+  return true
+end
+function is_inside_outline(fo::FillingCircle{T},outline::OutlinePolygon{T}) where T<:Real
+  return is_inside_polygon(outline.pList, fo.center)
+end
 
 function is_inside_polygon(polygon::Vector{P}, p::P; extreme = Point(100_000.0, p.y)) where P<:Point
   n = length(polygon)
@@ -64,27 +93,4 @@ function onSegment(p::P,q::P,r::P) where P<:Point
     else
         return false
     end
-end
-
-function csv_to_polygon(file_name::String)
-    n_lines = 0
-    for row in CSV.Rows(file_name;datarow=1)
-        n_lines += 1
-    end
-
-    println(n_lines)
-
-    xArr = zeros(n_lines)
-    yArr = zeros(n_lines)
-
-    ind = 1
-    for row in CSV.Rows(file_name;datarow=1)
-        xArr[ind] = parse(Float64,row[1])
-        yArr[ind] = parse(Float64,row[2])
-        ind += 1
-    end
-
-    pList = [Point(xArr[ti],yArr[ti]) for ti=1:n_lines]
-
-    return pList
 end
