@@ -8,7 +8,7 @@
 
 ## Installation
 
-CircGeometry.jl is an unregistered julia package.  To install StokesParticles.jl using the REPL, type
+CircGeometry.jl is an unregistered julia package.  To install CircGeometry.jl using the REPL, type
 
 `pkg> add https://github.com/pseastham/CircGeometry.jl`
 
