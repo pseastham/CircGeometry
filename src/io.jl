@@ -60,12 +60,8 @@ function save_image(output_name::String,circ_file::String,outline::O) where O<:A
 
     # plot circles
     for ti=1:ps.param.n_objects
-        print("\r plotting circle #$(ti)")
         plot_circle!(p,radiiArr[ti],xArr[ti],yArr[ti])
     end
-
-    # plot outline
-    print("\r plotting circle #$(ti)")
     plot_outline!(p,outline)
 
     savefig(p,output_name)
