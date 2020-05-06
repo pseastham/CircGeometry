@@ -8,25 +8,23 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
     ps = PorousStructure(material,radiiArr,between_buffer)
 
     for ti=1:material.n_objects
-        if log; println("attempting to place body #",ti,"..."); end
-
         xtemp = 0.0
         ytemp = 0.0
         safe_placement = false
         attempt_ind = 1
         while !(safe_placement)
+            if log; print('\r',"attempting to place body #",ti," / ",ps.param.n_objects," ..."); end
             ps.xArr[ti],ps.yArr[ti] = choose_random_center(outline,rng)
             copyArraysToCenters!(ps,ti)
 
             inside_bool = is_inside_outline(ps.olist[ti],outline)
-            if log;clear_line();print('\r',"   attempt #",attempt_ind," checking intersection..."); end
+            
             intersection_bool = is_intersecting_others(ti,ps)
             safe_placement = inside_bool && !intersection_bool
 
             marked_for_shuffling = inside_bool && intersection_bool
             n_shuffles = 10
             if marked_for_shuffling
-                if log;clear_line();print('\r',"   attempt #",attempt_ind," shuffling..."); end
                 for i=1:n_shuffles
                     shuffle_object!(ti,ps.olist)
                 end
@@ -42,7 +40,6 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
                 break
             end
         end
-        if log;clear_line();println("\n   safely placed circle #",ti);end
     end
 
     if log 
