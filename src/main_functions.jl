@@ -66,7 +66,7 @@ function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineRect
     return sort(radiiArr, rev=true)
 end
 function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlinePolygon{T}) where T<:Real
-    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.5)
+    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.55)
     return sort(radiiArr, rev=true)
 end
 
