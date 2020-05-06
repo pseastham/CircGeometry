@@ -19,14 +19,14 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
             copyArraysToCenters!(ps,ti)
 
             inside_bool = is_inside_outline(ps.olist[ti],outline)
-            if log; print('\r',"   attempt #",attempt_ind," checking intersection..."); end
+            if log;clear_line();print('\r',"   attempt #",attempt_ind," checking intersection..."); end
             intersection_bool = is_intersecting_others(ti,ps)
             safe_placement = inside_bool && !intersection_bool
 
             marked_for_shuffling = inside_bool && intersection_bool
             n_shuffles = 10
             if marked_for_shuffling
-                if log; print('\r',"   attempt #",attempt_ind," shuffling..."); end
+                if log;clear_line();print('\r',"   attempt #",attempt_ind," shuffling..."); end
                 for i=1:n_shuffles
                     shuffle_object!(ti,ps.olist)
                 end
@@ -42,11 +42,11 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
                 break
             end
         end
-        if log; println("\n   safely placed circle #",ti); end
+        if log;clear_line();println("\n   safely placed circle #",ti);end
     end
 
-    computed_vf = compute_volume_fraction(ps,outline)
     if log 
+        computed_vf = compute_volume_fraction(ps,outline)
         println()
         println("entered volume fraction:  ",ps.param.expected_volume_fraction)
         println("computed volume fraction: ",computed_vf)
@@ -61,15 +61,15 @@ function compute_ideal_radius(outline::O,material::MaterialParameters{T}) where 
 end
 
 function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineCircle{T}) where T<:Real
-    radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.65)
+    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.6)
     return sort(radiiArr, rev=true)
 end
 function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineRectangle{T}) where T<:Real
-    radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.65)
+    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.6)
     return sort(radiiArr, rev=true)
 end
 function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlinePolygon{T}) where T<:Real
-    radiiArr = ideal_radius*(0.6*rand(rng,n_objects) .+ 0.6)
+    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.5)
     return sort(radiiArr, rev=true)
 end
 
