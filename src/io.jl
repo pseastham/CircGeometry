@@ -1,4 +1,5 @@
 import CSV: Rows
+import Statistics: mean
 using Plots
 
 function write_circ(file_name::String,ps::PorousStructure)
@@ -31,9 +32,20 @@ function csv_to_polygon(file_name::String)
         ind += 1
     end
 
+    subtract_off_mean!(xArr)
+    subtract_off_mean!(yArr)
+
     pList = [Point(xArr[ti],yArr[ti]) for ti=1:n_lines]
 
     return pList
+end
+
+function subtract_off_mean!(arr::Vector{T}) where T<:Real
+    mm = mean(arr)
+    for ti=1:length(arr)
+        arr[ti] -= mm
+    end
+    nothing
 end
 
 function save_image(output_name::String,ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
