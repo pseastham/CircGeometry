@@ -22,7 +22,8 @@ Geometrie are defined by their type (circle, rectangle, or arbitrary polygon), v
 
 ## Examples
 
-Here are some visualizations of the circ files with accompanying "outline" (dash).
+Here are some visualizations of the circ files with accompanying "outline" (dash). Check out the [https://github.com/pseastham/CircGeometry.jl/tree/master/examples](examples folder) to see code for each outline.
+
 <p align="center">
 <table><tr>
 <td><img src="README_figures/circle.svg" width="400" height="400" /></td>
