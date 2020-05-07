@@ -78,14 +78,15 @@ end
 
 function save_image(output_name::String,circ_file::String,outline::O) where O<:AbstractOutlineObject
     # load in circ object
-    radiusArr, xArr, yArr = read_in_circ(file_input)
+    radiusArr, xArr, yArr = read_in_circ(output_name)
 
     # initialize figure
     p = plot(color=:black,aspect_ratio=1)
 
     # plot circles
-    for ti=1:ps.param.n_objects
-        plot_circle!(p,radiiArr[ti],xArr[ti],yArr[ti])
+    n_objects = length(radiusArr)
+    for ti=1:n_objects
+        plot_circle!(p,radiusArr[ti],xArr[ti],yArr[ti])
     end
     plot_outline!(p,outline)
 
@@ -96,6 +97,8 @@ end
     visualize_circles(file_input)
 
 Plots circles found in *.circ type file in ../ folder and exports to png
+
+Probably outdated -- might be able to delete?
 """
 function visualize_circles(file_input::String)
     radiusArr, xArr, yArr = read_in_circ(file_input)
@@ -104,6 +107,7 @@ function visualize_circles(file_input::String)
     p = plot(color=:black)
 
     # loop over circles and plot
+    nbodies = length(radiusArr)
     for ti=1:nbodies
         plot_circle!(p,radiusArr[ti],xArr[ti],yArr[ti])
     end

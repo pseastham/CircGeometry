@@ -10,7 +10,8 @@ function create_circle()
     outer_buffer = 1.0
     outline = OutlineCircle(radius,center,outer_buffer)
 
-    between_buffer = 10.0
+    between_buffer = compute_between_buffer(outline,material)
+    println("between_buffer: ",between_buffer)
     ps = generate_porous_structure(
         outline,material,between_buffer;log=true)
 
@@ -29,7 +30,7 @@ function create_rectangle()
     outer_buffer = 1.0
     outline = OutlineRectangle(p1,p2,outer_buffer)
 
-    between_buffer = 5.0
+    between_buffer = compute_between_buffer(outline,material)
     ps = generate_porous_structure(
         outline,material,between_buffer;log=true)
 
@@ -46,7 +47,7 @@ function create_car()
     polygon = csv_to_polygon("car.txt")
     outline = OutlinePolygon(polygon)
 
-    between_buffer = 5.0
+    between_buffer = compute_between_buffer(outline,material)
     ps = generate_porous_structure(
         outline,material,between_buffer;log=true)
 

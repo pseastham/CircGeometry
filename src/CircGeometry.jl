@@ -1,12 +1,7 @@
 module CircGeometry
 
-mutable struct Point{T}
-    x::T
-    y::T
-end
-
-include("shuffling_functions.jl")
 include("struct_defs.jl")
+include("shuffling_functions.jl")
 include("is_inside_functions.jl")
 include("main_functions.jl")
 include("io.jl")
@@ -19,6 +14,7 @@ export MaterialParameters,
        write_circ,
        csv_to_polygon,
        save_image,
+       compute_between_buffer,
        Point
 
 end # module

@@ -1,7 +1,5 @@
 using CircGeometry, Test
 
-circNames = ["test_circle","test_rect","test_poly"]
-
 # test circle outline
 outer_buffer = 5.0
 between_buffer = 5.0
@@ -11,9 +9,6 @@ material = MaterialParameters(vf,n_bodies)
 outline = OutlineCircle(1.0,CircGeometry.Point(0.0,0.0),outer_buffer)
 ps = generate_porous_structure(
     outline,material,between_buffer;log=false)
-
-#write_circ(circNames[1],ps)
-#save_image("circle.png",ps,outline)
 vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
 
 # test rectangle outline
@@ -24,8 +19,6 @@ outline = OutlineRectangle(
 @test (CircGeometry.compute_outline_area(outline) == 6.0)
 ps = generate_porous_structure(
     outline,material,between_buffer;log=false)
-#write_circ(circNames[2],ps)
-#save_image("rectangle.png",ps,outline)
 vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
 
 # test arbitrary polygon outline
@@ -38,10 +31,4 @@ outline = OutlinePolygon([
 @test (CircGeometry.compute_outline_area(outline) == 3.0)
 ps = generate_porous_structure(
     outline,material,between_buffer;log=false)
-#write_circ(circNames[3],ps)
-#save_image("polygon.png",ps,outline)
 vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
-
-#for ti=1:length(circNames)
-#    rm(string(circNames[ti],".circ"))
-#end

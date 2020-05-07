@@ -1,6 +1,11 @@
 abstract type AbstractFillingObject end
 abstract type AbstractOutlineObject end
 
+mutable struct Point{T}
+    x::T
+    y::T
+end
+
 struct OutlineCircle{T} <: AbstractOutlineObject
     radius::T
     center::Point{T}

@@ -28,7 +28,8 @@ function compute_repulsion(ind::Int,olist)
     for ti=1:ind, tj=(ti+1):ind       # takes advantage of force anti-symmetry
         Δx = olist[tj].center.x - olist[ti].center.x
         Δy = olist[tj].center.y - olist[ti].center.y
-        d = olist[ti].radius + olist[tj].radius + (1 + olist[ti].buffer_percent + olist[tj].buffer_percent)/100
+        d = olist[ti].radius + olist[tj].radius + 
+            (1 + olist[ti].buffer_percent + olist[tj].buffer_percent)/100
 
         fx,fy = ForceCalculation(d,Δx,Δy)
         FXarr[ti] += fx; FYarr[ti] += fy
