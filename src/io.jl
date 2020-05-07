@@ -154,7 +154,7 @@ function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T) where 
 end
 
 function plot_outline!(p::Plots.Plot{Plots.GRBackend},outline::OutlineCircle{T}) where T<:Real
-    nθ = 40
+    nθ = 100
     θarr = 0:2*pi/(nθ-1):2*pi
 
     plot!(p,
@@ -165,7 +165,7 @@ function plot_outline!(p::Plots.Plot{Plots.GRBackend},outline::OutlineCircle{T})
     nothing
 end
 function plot_outline!(p::Plots.Plot{Plots.GRBackend},outline::OutlineRectangle{T}) where T<:Real
-    nn = 40
+    nn = 3
 
     # plot top 
     x = range(outline.p1.x,outline.p2.x,length=nn)
