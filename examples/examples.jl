@@ -1,7 +1,7 @@
 using CircGeometry
 
 function create_circle()
-    vf = 0.65
+    vf = 0.2
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
     
