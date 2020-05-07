@@ -78,7 +78,7 @@ end
 
 function save_image(output_name::String,circ_file::String,outline::O) where O<:AbstractOutlineObject
     # load in circ object
-    radiusArr, xArr, yArr = read_in_circ(output_name)
+    radiusArr, xArr, yArr = read_in_circ(circ_file)
 
     # initialize figure
     p = plot(color=:black,aspect_ratio=1)
