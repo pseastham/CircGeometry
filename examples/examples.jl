@@ -1,7 +1,7 @@
 using CircGeometry
 
 function create_circle()
-    vf = 0.5
+    vf = 0.65
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
     
@@ -11,7 +11,6 @@ function create_circle()
     outline = OutlineCircle(radius,center,outer_buffer)
 
     between_buffer = compute_between_buffer(outline,material)
-    println("between_buffer: ",between_buffer)
     ps = generate_porous_structure(
         outline,material,between_buffer;log=true)
 
