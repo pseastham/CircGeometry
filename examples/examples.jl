@@ -1,16 +1,16 @@
 using CircGeometry
 
 function create_circle()
-    vf = 0.4
+    vf = 0.5
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
     
     radius = 1.5
     center = Point(-0.5,1.0)
-    outer_buffer = 5.0
+    outer_buffer = 1.0
     outline = OutlineCircle(radius,center,outer_buffer)
 
-    between_buffer = 5.0
+    between_buffer = 10.0
     ps = generate_porous_structure(
         outline,material,between_buffer;log=true)
 
@@ -20,13 +20,13 @@ function create_circle()
 end
 
 function create_rectangle()
-    vf = 0.4
+    vf = 0.5
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
 
     p1 = Point(-1.0,0.0)
     p2 = Point(1.0,2.0)
-    outer_buffer = 5.0
+    outer_buffer = 1.0
     outline = OutlineRectangle(p1,p2,outer_buffer)
 
     between_buffer = 5.0
@@ -39,7 +39,7 @@ function create_rectangle()
 end
 
 function create_car()
-    vf = 0.4
+    vf = 0.5
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
 
