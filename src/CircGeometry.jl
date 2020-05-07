@@ -15,6 +15,7 @@ export MaterialParameters,
        csv_to_polygon,
        save_image,
        compute_between_buffer,
+       compute_volume_fraction,
        Point
 
 end # module
