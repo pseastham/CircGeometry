@@ -68,7 +68,11 @@ function choose_θstar(expected_volume_fraction::T) where T<:Real
     elseif expected_volume_fraction < 0.2
            return 2*expected_volume_fraction
     elseif expected_volume_fraction < 0.3
-        return expected_volume_fraction+0.1
+        return expected_volume_fraction + 0.1
+    elseif expected_volume_fraction < 0.5
+        return expected_volume_fraction + 0.05
+    elseif expected_volume_fraction > 0.6
+        return expected_volume_fraction
     else
         return maximum([0.4,expected_volume_fraction+0.05])
     end
