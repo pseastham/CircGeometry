@@ -53,7 +53,7 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
 end
 
 function compute_between_buffer(outline::O,material::MaterialParameters{T}) where {T<:Real,O<:AbstractOutlineObject}
-    θstar = material.expected_volume_fraction+0.05
+    θstar = maximum([0.4,material.expected_volume_fraction+0.05])
     ideal_radius = compute_ideal_radius(outline,material)
     area = compute_outline_area(outline)
 
