@@ -59,7 +59,7 @@ function compute_between_buffer(outline::O,material::MaterialParameters{T}) wher
 
     between_buffer = 100*(sqrt(area * θstar / (ideal_radius^2*pi*material.n_objects)) - one(T))
 
-    return between_buffer
+    return maximum([between_buffer,1])
 end
 
 function choose_θstar(expected_volume_fraction::T) where T<:Real
