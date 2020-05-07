@@ -63,7 +63,7 @@ end
 
 function save_image(output_name::String,ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
     # initialize figure
-    p = plot(color=:black,aspect_ratio=:equal)
+    p = plot(color=:black,aspect_ratio=1)
 
     # plot circles
     for ti=1:ps.param.n_objects
@@ -144,7 +144,10 @@ function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T) where 
     nθ = 40
     θarr = 0:2*pi/(nθ-1):2*pi
 
-    plot!(p,x .+ radius*cos.(θarr),y .+ radius*sin.(θarr),label="",color=:black)
+    plot!(p,
+        x .+ radius*cos.(θarr),y .+ radius*sin.(θarr),
+        label="",color=:black,fillalpha=0.2,
+        c=:blue)
 
     nothing
 end
