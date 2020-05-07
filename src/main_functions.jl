@@ -71,8 +71,8 @@ function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlinePoly
 end
 
 function choose_random_center(outline::OutlineCircle{T},rng) where T<:Real
-    x = 2*outline.radius*rand(rng) - outline.center.x
-    y = 2*outline.radius*rand(rng) - outline.center.y
+    x = outline.radius*(2*rand(rng) - 1) + outline.center.x
+    y = outline.radius*(2*rand(rng) - 1) + outline.center.y
     return x,y
 end
 function choose_random_center(outline::OutlineRectangle{T},rng) where T<:Real
