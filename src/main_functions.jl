@@ -58,21 +58,21 @@ function compute_ideal_radius(outline::O,material::MaterialParameters{T}) where 
 end
 
 function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineCircle{T}) where T<:Real
-    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.5)
+    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.505)
     return sort(radiiArr, rev=true)
 end
 function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlineRectangle{T}) where T<:Real
-    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.5)
+    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.505)
     return sort(radiiArr, rev=true)
 end
 function create_radiiArr(ideal_radius::T,rng,n_objects::Int,outline::OutlinePolygon{T}) where T<:Real
-    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.517)
+    radiiArr = ideal_radius*(0.7*rand(rng,n_objects) .+ 0.519)
     return sort(radiiArr, rev=true)
 end
 
 function choose_random_center(outline::OutlineCircle{T},rng) where T<:Real
-    x = outline.radius*(2*rand(rng) - 1) + outline.center.x
-    y = outline.radius*(2*rand(rng) - 1) + outline.center.y
+    x = outline.radius*(2*rand(rng) - one(T)) + outline.center.x
+    y = outline.radius*(2*rand(rng) - one(T)) + outline.center.y
     return x,y
 end
 function choose_random_center(outline::OutlineRectangle{T},rng) where T<:Real
