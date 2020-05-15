@@ -26,7 +26,7 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
             n_shuffles = 10
             if marked_for_shuffling
                 for i=1:n_shuffles
-                    shuffle_object!(ti,ps.olist)
+                    shuffle_object!(ti,ps.olist,outline.wlist)
                 end
                 copyCentersToArrays!(ps::PorousStructure)
             end

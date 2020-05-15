@@ -9,17 +9,17 @@ function is_inside_outline(fo::FillingCircle{T},outline::OutlineRectangle{T}) wh
   width  = outline.p2.y - outline.p1.y
 
   # check top
-  if (fo.center.y + fo.radius) > outline.p2.y + (outline.buffer_percent/100)*width
+  if (fo.center.y + fo.radius) > outline.p2.y
       return false
   # check bottom
-  elseif (fo.center.y - fo.radius) < outline.p1.y - (outline.buffer_percent/100)*width
+  elseif (fo.center.y - fo.radius) < outline.p1.y
       return false
   end
   # check right
-  if (fo.center.x + fo.radius) > outline.p2.x + (outline.buffer_percent/100)*length
+  if (fo.center.x + fo.radius) > outline.p2.x
       return false
   # check left
-  elseif (fo.center.x - fo.radius) < outline.p1.x - (outline.buffer_percent/100)*length
+  elseif (fo.center.x - fo.radius) < outline.p1.x
       return false
   end
 
