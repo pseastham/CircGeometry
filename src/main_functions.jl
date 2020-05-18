@@ -17,12 +17,7 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
             ps.xArr[ti],ps.yArr[ti] = choose_random_center(outline,rng)
             copyArraysToCenters!(ps,ti)
 
-            inside_bool = is_inside_outline(ps.olist[ti],outline)
-            
-            intersection_others_bool = is_intersecting_others(ti,ps)
-            interection_walls_bool = is_intersecting_walls(outline.wlist,ps.olist[ti]) 
-
-            safe_placement = inside_bool && !intersection_others_bool && !interection_walls_bool
+            inside_bool, intersection_others_bool, safe_placement = is_safe_placement(ti,ps,outline)
 
             marked_for_shuffling = inside_bool && intersection_others_bool
             n_shuffles = 10
@@ -32,10 +27,8 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
                 end
                 copyCentersToArrays!(ps::PorousStructure)
             end
-            inside_bool = is_inside_outline(ps.olist[ti],outline)
-            intersection_others_bool = is_intersecting_others(ti,ps)
-            interection_walls_bool = is_intersecting_walls(outline.wlist,ps.olist[ti]) 
-            safe_placement = inside_bool && !intersection_others_bool && !interection_walls_bool
+
+            inside_bool, intersection_others_bool, safe_placement = is_safe_placement(ti,ps,outline)
 
             attempt_ind += 1
             if attempt_ind > material.n_objects*100
@@ -53,6 +46,14 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
     end
 
     return ps
+end
+
+function is_safe_placement(ti,ps,outline)
+    inside_bool = is_inside_outline(ps.olist[ti],outline)
+    intersection_others_bool = is_intersecting_others(ti,ps)
+    intersection_walls_bool = is_intersecting_walls(outline,ps.olist[ti])
+    safe_placement = inside_bool && !intersection_others_bool && !intersection_walls_bool
+    return inside_bool, intersection_others_bool, safe_placement
 end
 
 function compute_between_buffer(outline::O,material::MaterialParameters{T}) where {T<:Real,O<:AbstractOutlineObject}
