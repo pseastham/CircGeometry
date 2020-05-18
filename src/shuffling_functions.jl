@@ -68,9 +68,6 @@ function shuffle_object!(ind::Int,olist,wlist)
     nothing
 end
 
-#    NearestPoint!(point,node,wall)
-#
-#Compute nearest point to object on LineWall and CircleWall 
 function NearestPoint!(point::Point{T},node::Point{T},wall::LineWall) where T<:Real
     px=node.x; py=node.y
 

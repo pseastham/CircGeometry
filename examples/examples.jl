@@ -15,7 +15,6 @@ function create_circle()
         outline,material,between_buffer;log=true)
 
     write_circ("circle",ps)
-
     save_image("circle.svg",ps,outline)
 end
 
@@ -33,7 +32,6 @@ function create_rectangle()
         outline,material,between_buffer;log=true)
 
     write_circ("rectangle",ps)
-
     save_image("rectangle.svg",ps,outline)
 end
 
@@ -50,7 +48,6 @@ function create_car()
         outline,material,between_buffer;log=true)
 
     write_circ("car",ps)
-
     save_image("car.svg",ps,outline)
 end
 

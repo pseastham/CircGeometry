@@ -63,6 +63,10 @@ function is_intersecting_walls(outline::O,p::F) where {O<:AbstractOutlineObject,
   for tw=1:length(outline.wlist)
     pointOnWall = NearestPoint(p.center,outline.wlist[tw])
     if isInLine(outline.wlist[tw],pointOnWall)
+        #println("is on line!")
+        #println(pointOnWall.x," ",pointOnWall.y)
+        #println(p.center.x," ",p.center.y)
+        #println("-----")
         Δx = pointOnWall.x - p.center.x
         Δy = pointOnWall.y - p.center.y
         dist = sqrt(Δx^2 + Δy^2)
