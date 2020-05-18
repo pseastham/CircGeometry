@@ -19,10 +19,12 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
 
             inside_bool = is_inside_outline(ps.olist[ti],outline)
             
-            intersection_bool = is_intersecting_others(ti,ps)
-            safe_placement = inside_bool && !intersection_bool
+            intersection_others_bool = is_intersecting_others(ti,ps)
+            interection_walls_bool = is_intersecting_walls(outline.wlist,ps.olist[ti]) 
 
-            marked_for_shuffling = inside_bool && intersection_bool
+            safe_placement = inside_bool && !intersection_others_bool && !interection_walls_bool
+
+            marked_for_shuffling = inside_bool && intersection_others_bool
             n_shuffles = 10
             if marked_for_shuffling
                 for i=1:n_shuffles
@@ -31,8 +33,9 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
                 copyCentersToArrays!(ps::PorousStructure)
             end
             inside_bool = is_inside_outline(ps.olist[ti],outline)
-            intersection_bool = is_intersecting_others(ti,ps)
-            safe_placement = inside_bool && !intersection_bool
+            intersection_others_bool = is_intersecting_others(ti,ps)
+            interection_walls_bool = is_intersecting_walls(outline.wlist,ps.olist[ti]) 
+            safe_placement = inside_bool && !intersection_others_bool && !interection_walls_bool
 
             attempt_ind += 1
             if attempt_ind > material.n_objects*100

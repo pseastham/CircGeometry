@@ -57,7 +57,25 @@ function is_inside_polygon(polygon::Vector{P}, p::P; extreme = Point(100_000.0, 
   else
     return false
   end
-end 
+end
+
+function is_intersecting_walls(wlist::Vector{W},p::F) where {W<:AbstractWall,F<:AbstractFillingObject}
+  intersection_bool = false
+  for tw=1:length(wlist)
+    pointOnWall = NearestPoint(p.center,wlist[tw])
+    if isInLine(wlist[tw],pointOnWall)
+        Δx = pointOnWall.x - p.center.x     # might be pointing the wrong way...
+        Δy = pointOnWall.y - p.center.y
+        dist = sqrt(Δx^2 + Δy^2)
+
+        if dist < p.radius
+          intersection_bool = true
+        end
+    end
+  end
+
+  return intersection_bool
+end
 
 function doIntersect(p1::P,q1::P,p2::P,q2::P) where P<:Point
     # Find the four orientations needed for general case
