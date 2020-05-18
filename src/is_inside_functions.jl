@@ -60,7 +60,6 @@ function is_inside_polygon(polygon::Vector{P}, p::P; extreme = Point(100_000.0, 
 end
 
 function is_intersecting_walls(outline::O,p::F) where {O<:AbstractOutlineObject,F<:AbstractFillingObject}
-  intersection_bool = false
   for tw=1:length(outline.wlist)
     pointOnWall = NearestPoint(p.center,outline.wlist[tw])
     if isInLine(outline.wlist[tw],pointOnWall)
@@ -69,12 +68,12 @@ function is_intersecting_walls(outline::O,p::F) where {O<:AbstractOutlineObject,
         dist = sqrt(Δx^2 + Δy^2)
 
         if dist < p.radius
-          intersection_bool = true
+          return true
         end
     end
   end
 
-  return intersection_bool
+  return false
 end
 
 function doIntersect(p1::P,q1::P,p2::P,q2::P) where P<:Point
