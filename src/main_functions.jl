@@ -11,13 +11,14 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
         xtemp = 0.0
         ytemp = 0.0
         safe_placement = false
+        intersection_walls_bool = false
         attempt_ind = 1
         while !(safe_placement)
             if log; print('\r',"attempting to place body #",ti,"/",ps.param.n_objects," ..."); end
             ps.xArr[ti],ps.yArr[ti] = choose_random_center(outline,rng)
             copyArraysToCenters!(ps,ti)
 
-            inside_bool, intersection_others_bool, safe_placement = is_safe_placement(ti,ps,outline)
+            inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement = is_safe_placement(ti,ps,outline)
 
             marked_for_shuffling = inside_bool && intersection_others_bool
             n_shuffles = 10
@@ -28,13 +29,16 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
                 copyCentersToArrays!(ps::PorousStructure)
             end
 
-            inside_bool, intersection_others_bool, safe_placement = is_safe_placement(ti,ps,outline)
+            inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement = is_safe_placement(ti,ps,outline)
 
             attempt_ind += 1
             if attempt_ind > material.n_objects*100
                 error("reached attempt threshold while trying to place body #$(ti)")
                 break
             end
+        end
+        if safe_placement && intersection_walls_bool
+            println(ti," is messed up")
         end
     end
 
@@ -53,7 +57,7 @@ function is_safe_placement(ti,ps,outline)
     intersection_others_bool = is_intersecting_others(ti,ps)
     intersection_walls_bool = is_intersecting_walls(outline,ps.olist[ti])
     safe_placement = inside_bool && !intersection_others_bool && !intersection_walls_bool
-    return inside_bool, intersection_others_bool, safe_placement
+    return inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement
 end
 
 function compute_between_buffer(outline::O,material::MaterialParameters{T}) where {T<:Real,O<:AbstractOutlineObject}
