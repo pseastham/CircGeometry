@@ -14,8 +14,7 @@ vf_exp = CircGeometry.compute_volume_fraction(ps,outline)
 # test rectangle outline
 outline = OutlineRectangle(
     CircGeometry.Point(-2.0,0.0),
-    CircGeometry.Point(1.0,2.0),
-    outer_buffer)
+    CircGeometry.Point(1.0,2.0))
 @test (CircGeometry.compute_outline_area(outline) == 6.0)
 ps = generate_porous_structure(
     outline,material,between_buffer;log=false)

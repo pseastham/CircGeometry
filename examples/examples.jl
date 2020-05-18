@@ -7,7 +7,7 @@ function create_circle()
     
     radius = 1.5
     center = Point(-0.5,1.0)
-    outer_buffer = 1.0
+    outer_buffer = 0.0
     outline = OutlineCircle(radius,center,outer_buffer)
 
     between_buffer = compute_between_buffer(outline,material)
