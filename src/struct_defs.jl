@@ -7,9 +7,10 @@ mutable struct Point{T}
     y::T
 end
 
+# do we need thickness for anything?
 struct LineWall{T} <: AbstractWall
     nodes::Vector{Point{T}}     # 2 points, defining start and end
-    thickness::T                # gives line "area"
+    thickness::T                
     n::Vector{T}                # normal unit vector of wall
     t::Vector{T}                # tangent unit vector of wall
 
@@ -37,37 +38,40 @@ struct LineWall{T} <: AbstractWall
         return new{T}(nodes,thickness,n,t)
     end
     LineWall(n1,n2,thickness) = LineWall([n1,n2],thickness)
+    LineWall(n1,n2) = LineWall([n1,n2],0.0)
 end
 
 struct CircleWall{T} <: AbstractWall
     center::Point{T}          # point that defines center
     radius::T                 # radius of circle
     thickness::T              # gives circle curve "area"
+
+    function CircleWall(center::Point{T},radius::T) where T<:Real
+        return new{T}(center,radius,zero(T))
+    end
 end
 
 struct OutlineCircle{T} <: AbstractOutlineObject
     radius::T
     center::Point{T}
-    buffer_percent::T
     wlist::Vector{CircleWall{T}}
 
-    function OutlineCircle(radius::T,center::Point{T},buffer_percent::T) where T<:Real
-        wlist = [CircleWall(center,radius*(one(T) + buffer_percent/100),zero(T))]
-        return new{T}(radius,center,buffer_percent,wlist)
+    function OutlineCircle(radius::T,center::Point{T}) where T<:Real
+        wlist = [CircleWall(center,radius)]
+        return new{T}(radius,center,wlist)
     end
 end
 
-# p1 is lower left, p2 is upper right
 struct OutlineRectangle{T} <: AbstractOutlineObject
-    p1::Point{T}
-    p2::Point{T}
+    p1::Point{T}                # lower left point
+    p2::Point{T}                # upper right point
     wlist::Vector{LineWall{T}}
 
     function OutlineRectangle(p1::Point{T},p2::Point{T}) where T<:Real
-        wlist = [LineWall(Point(p2.x,p2.y),Point(p1.x,p2.y),zero(T)),            # top
-                 LineWall(Point(p1.x,p1.y),Point(p2.x,p1.y),zero(T)),            # bottom
-                 LineWall(Point(p1.x,p2.y),Point(p1.x,p1.y),zero(T)),            # left
-                 LineWall(Point(p2.x,p1.y),Point(p2.x,p2.y),zero(T))]            # right
+        wlist = [LineWall(Point(p2.x,p2.y),Point(p1.x,p2.y)),            # top
+                 LineWall(Point(p1.x,p1.y),Point(p2.x,p1.y)),            # bottom
+                 LineWall(Point(p1.x,p2.y),Point(p1.x,p1.y)),            # left
+                 LineWall(Point(p2.x,p1.y),Point(p2.x,p2.y))]            # right
         return new{T}(p1,p2,wlist)
     end
 end
@@ -80,10 +84,8 @@ struct OutlinePolygon{T} <: AbstractOutlineObject
 
     function OutlinePolygon(pList::Vector{Point{T}}) where T<:Real
         n_objects = length(pList)
-        maxX = -10_000.0
-        minX = 10_000.0
-        maxY = -10_000.0
-        minY = 10_000.0
+        maxX = -10_000.0; minX = -maxX
+        maxY = maxX; minY = -maxX
         for ti=1:n_objects
             if pList[ti].x > maxX
                 maxX = pList[ti].x

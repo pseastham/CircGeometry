@@ -1,5 +1,6 @@
 using SafeTestsets
 
 @time begin
-    @time @safetestset "Circle Outline Tests" begin include("circle_outline_test.jl") end
+    @time @safetestset "Check Position Tests" begin include("position_checking_test.jl") end
+    @time @safetestset "Full Run Tests" begin include("full_run_test.jl") end
 end

@@ -1,8 +1,8 @@
 module CircGeometry
 
 include("struct_defs.jl")
-include("shuffling_functions.jl")
 include("is_inside_functions.jl")
+include("shuffling_functions.jl")
 include("main_functions.jl")
 include("io.jl")
 
