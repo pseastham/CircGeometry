@@ -31,7 +31,7 @@ struct LineWall{T} <: AbstractWall
     
         return new{T}(nodes,thickness,n,t)
     end
-    LineWall(n1,n2) = LineWall([n1,n2],0.0)
+    LineWall(n1,n2) = LineWall(n1,n2,0.0)
 end
 
 struct CircleWall{T} <: AbstractWall
