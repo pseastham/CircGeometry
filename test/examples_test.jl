@@ -1,6 +1,6 @@
-using CircGeometry
+using CircGeometry, Test
 
-function create_circle()
+@testset "circle example test" begin
     vf = 0.4
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
@@ -10,14 +10,13 @@ function create_circle()
     outline = OutlineCircle(radius,center)
 
     between_buffer = compute_between_buffer(outline,material)
-    ps = generate_porous_structure(
-        outline,material,between_buffer;log=true)
+    ps = generate_porous_structure(outline,material,between_buffer;log=false)
 
     write_circ("circle.circ",ps)
     save_image("circle.svg",ps,outline)
 end
 
-function create_rectangle()
+@testset "rectangle example test" begin
     vf = 0.4
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
@@ -27,34 +26,30 @@ function create_rectangle()
     outline = OutlineRectangle(p1,p2)
 
     between_buffer = compute_between_buffer(outline,material)
-    ps = generate_porous_structure(
-        outline,material,between_buffer;log=true)
+    ps = generate_porous_structure(outline,material,between_buffer;log=false)
 
     write_circ("rectangle.circ",ps)
     save_image("rectangle.svg",ps,outline)
 end
 
-function create_car()
+@testset "polygon car example test" begin
     vf = 0.4
     n_bodies = 400
     material = MaterialParameters(vf,n_bodies)
 
-    polygon = csv_to_polygon("car.txt")
+    polygon = csv_to_polygon("test-data/car.txt")
     outline = OutlinePolygon(polygon)
 
     between_buffer = compute_between_buffer(outline,material)
-    ps = generate_porous_structure(
-        outline,material,between_buffer;log=true)
+    ps = generate_porous_structure(outline,material,between_buffer;log=false)
 
     write_circ("car.circ",ps)
     save_image("car.svg",ps,outline)
 end
 
-function run_all_examples()
-    println("running circle example...")
-    create_circle()
-    println("running rectangle example...")
-    create_rectangle()
-    println("running car (polygon) example...")
-    create_car()
-end 
+rm("circle.circ")
+rm("circle.svg")
+rm("rectangle.circ")
+rm("rectangle.svg")
+rm("car.circ")
+rm("car.svg")

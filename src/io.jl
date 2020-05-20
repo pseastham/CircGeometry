@@ -2,8 +2,14 @@ import CSV: Rows
 import Statistics: mean
 using Plots
 
+"""
+    write_circ(file_name,ps)
+
+Takes PorousStructure `ps` and writes `circ` file 
+(text file) with name `file_name`
+"""
 function write_circ(file_name::String,ps::PorousStructure)
-    filepath = string(file_name,".circ")
+    filepath = string(file_name)
     open(filepath, "w") do io
         println(io, "# nbods")
         println(io, ps.param.n_objects)
@@ -16,6 +22,12 @@ function write_circ(file_name::String,ps::PorousStructure)
     end
 end
 
+"""
+    csv_to_polygon(file_name)
+
+Reads in csv file containing (x,y) coordinates of points. Returns
+arrays of `Point` type.
+"""
 function csv_to_polygon(file_name::String)
     n_lines = 0
     for row in Rows(file_name;datarow=1)
@@ -40,6 +52,13 @@ function csv_to_polygon(file_name::String)
     return pList
 end
 
+"""
+    center_polygon!(xArr,yArr)
+
+Takes in list of points as two arrays, and centers them. Especially
+useful for taking in points obtains from, for example, Inkscape which
+often is translated to random points in the plane
+"""
 function center_polygon!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
     xCenter = 0.5*(maximum(xArr) + minimum(xArr))
     yCenter = 0.5*(maximum(yArr) + minimum(yArr))
@@ -50,6 +69,13 @@ function center_polygon!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
     nothing
 end
 
+"""
+    rescale_polygon!(xArr,yArr)
+
+Takes in list of points as two arrays, and rescales them so that the 
+minimum axis (either horizontal or vertical) has length 1. Notably,
+this function keeps the same aspect ratio.
+"""
 function rescale_polygon!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
     xlength = maximum(xArr) - minimum(xArr)
     ylength = maximum(yArr) - minimum(yArr)
@@ -75,7 +101,6 @@ function save_image(output_name::String,ps::PorousStructure,outline::O) where O<
 
     savefig(p,output_name)
 end
-
 function save_image(output_name::String,circ_file::String,outline::O) where O<:AbstractOutlineObject
     # load in circ object
     radiusArr, xArr, yArr = read_in_circ(circ_file)
@@ -94,28 +119,11 @@ function save_image(output_name::String,circ_file::String,outline::O) where O<:A
 end
 
 """
-    visualize_circles(file_input)
+    read_in_circ(file_input)
 
-Plots circles found in *.circ type file in ../ folder and exports to png
-
-Probably outdated -- might be able to delete?
+Takes circ file with name `file_input` and returns arrays 
+of radii, x, and y coordinates.
 """
-function visualize_circles(file_input::String)
-    radiusArr, xArr, yArr = read_in_circ(file_input)
-
-    # initialize figure
-    p = plot(color=:black)
-
-    # loop over circles and plot
-    nbodies = length(radiusArr)
-    for ti=1:nbodies
-        plot_circle!(p,radiusArr[ti],xArr[ti],yArr[ti])
-    end
-
-    # export figure
-    display(p)
-end
-
 function read_in_circ(file_input::String)
     # read in circ file
     circfile = string(file_input)
@@ -139,10 +147,11 @@ function read_in_circ(file_input::String)
     end
     return radiusArr, xArr, yArr
 end
-"""
-    plot_circle(p,radius,x,y)
 
-plots circle to plot object p. Circle has center (x,y)
+"""
+    plot_circle!(p,radius,x,y)
+
+Adds a circle to plot object `p`. Circle has center (x,y).
 """
 function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T) where T<:Real
     nθ = 40
@@ -157,6 +166,12 @@ function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T) where 
     nothing
 end
 
+"""
+    plot_outline!(p,outline)
+
+Adds a outline to plot object `p`. Contains different methods
+for different outline types (circle, rectangle, polygon).
+"""
 function plot_outline!(p::Plots.Plot{Plots.GRBackend},outline::OutlineCircle{T}) where T<:Real
     nθ = 100
     θarr = 0:2*pi/(nθ-1):2*pi

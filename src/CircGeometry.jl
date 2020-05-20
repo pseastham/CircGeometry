@@ -11,11 +11,12 @@ export MaterialParameters,
        OutlineRectangle,
        OutlinePolygon,
        generate_porous_structure,
-       write_circ,
-       csv_to_polygon,
-       save_image,
        compute_between_buffer,
        compute_volume_fraction,
        Point
+
+export write_circ,
+       csv_to_polygon,
+       save_image
 
 end # module

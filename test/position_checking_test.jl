@@ -16,10 +16,6 @@ z = Point(0.5+Float64(pi),1.5+Float64(pi))
     @test CircGeometry.get_orientation(p1,q1,Point(-1.0,0.0)) == 2
 end
 
-# check on_segment
-
-# check get_nearest_point
-
 a = Point(13.2,12.3)
 b = Point(1.0+eps(),1.0)
 circlewall = CircGeometry.CircleWall(Point(0.0,0.0),1.0)
@@ -32,11 +28,3 @@ linewall = CircGeometry.LineWall(Point(-1.0,1.0),Point(1.0,1.0))
     @test CircGeometry.is_point_in_wall(p1,linewall) == false
     @test CircGeometry.is_point_in_wall(b,linewall) == false
 end
-
-# check is_inside_outline (x3)
-#fo = FillingCircle(1.0,Point(0.0,0.0),0.5)
-#outline = OutlineCircle()
-
-# check is_inside_polygon (x1)
-
-# check is_intersecting_walls
