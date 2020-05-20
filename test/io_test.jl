@@ -12,6 +12,7 @@ using CircGeometry, Test
     between_buffer = compute_between_buffer(outline,material)
     ps = generate_porous_structure(outline,material,between_buffer)
     write_circ("test-data/test_file.circ",ps)
+    save_image("test-data/test_file.svg","test-data/test_file.circ",outline)
 end
 
 @testset "csv_to_polygon test" begin
@@ -28,3 +29,4 @@ end
 
 # clean up for next test
 rm("test-data/test_file.circ")
+rm("test-data/test_file.svg")

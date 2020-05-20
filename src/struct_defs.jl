@@ -14,30 +14,23 @@ struct LineWall{T} <: AbstractWall
     n::Vector{T}                # normal unit vector of wall
     t::Vector{T}                # tangent unit vector of wall
 
-    function LineWall(nodes::Vector{Point{T}},thickness::T) where T<:Real
-        if length(nodes) != 2
-            throw(DimensionMismatch("line is defined by 2 points"))
-        end
-    
-        x0 = [nodes[1].x,nodes[2].x]
-        x1 = [nodes[1].y,nodes[2].y]
-    
-        n = zeros(Float64,2)
-        t = zeros(Float64,2)
+    function LineWall(n1::Point{T},n2::Point{T},thickness::T) where T<:Real    
+        n = zeros(Float64,2); t = zeros(Float64,2)
     
         # compute wall length
-        WL = sqrt((nodes[2].x - nodes[1].x)^2 + (nodes[2].y - nodes[1].y)^2)
+        WL = sqrt((n2.x - n1.x)^2 + (n2.y - n1.y)^2)
     
         # comute tangent
-        t[1] = (nodes[2].x - nodes[1].x)/WL
-        t[2] = (nodes[2].y - nodes[1].y)/WL
+        t[1] = (n2.x - n1.x)/WL
+        t[2] = (n2.y - n1.y)/WL
     
         n[1] = -t[2]
         n[2] =  t[1]
+
+        nodes = [n1,n2]
     
         return new{T}(nodes,thickness,n,t)
     end
-    LineWall(n1,n2,thickness) = LineWall([n1,n2],thickness)
     LineWall(n1,n2) = LineWall([n1,n2],0.0)
 end
 
@@ -134,11 +127,4 @@ struct PorousStructure{T}
         yArr = zeros(T,param.n_objects)
         new{T}(param, olist, xArr, yArr,radiiArr)
     end
-    function PorousStructure(param::MaterialParameters{T},radiiArr::Vector{T},between_buffer::Vector{T}) where T<:Real
-        olist = [FillingCircle(radiiArr[ti],Point(zero(T),zero(T)),between_buffer[ti]) for ti=1:param.n_objects]
-        xArr = zeros(T,param.n_objects)
-        yArr = zeros(T,param.n_objects)
-        new{T}(param, olist, xArr, yArr,radiiArr)
-    end
-    PorousStructure(param::MaterialParameters{T},radiiArr::Vector{T}) where T<:Real = PorousStructure(param,radiiArr,zero(T))
 end
