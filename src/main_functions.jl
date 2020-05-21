@@ -87,12 +87,13 @@ function compute_volume_fraction(ps::PorousStructure,outline::O) where O<:Abstra
     return exp_area/true_area 
 end
 
-function is_safe_placement(ti,ps,outline)
-    inside_bool = is_inside_outline(ps.olist[ti],outline)
-    intersection_others_bool = is_intersecting_others(ti,ps)
-    intersection_walls_bool = is_intersecting_walls(outline,ps.olist[ti])
-    safe_placement = inside_bool && !intersection_others_bool && !intersection_walls_bool
-    return inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement
+function is_safe_placement!(placement,ti,ps,outline)
+    placement.inside = is_inside_outline(ps.olist[ti],outline)
+    placement.intersection_others = is_intersecting_others(ti,ps)
+    placement.intersection_walls = is_intersecting_walls(outline,ps.olist[ti])
+    placement.safe_placement = placement.inside && !(placement.intersection_others) && !(placement.intersection_walls)
+    placement.marked_for_shuffling = placement.inside && placement.intersection_others
+    nothing
 end
 
 function choose_θstar(expected_volume_fraction::T) where T<:Real
