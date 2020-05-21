@@ -43,7 +43,7 @@ function is_inside_polygon(polygon::Vector{P}, p::P; extreme = Point(100_000.0, 
       # If the point 'p' is colinear with line segment 'i-next', then check if it lies on segment. 
       # If it lies, return true, otherwise false
       if (get_orientation(polygon[i], p, polygon[next]) == 0)
-         return on_segment(polygon[i], p, polygon[next],zero(T))
+         return on_segment(polygon[i], p, polygon[next])
       end
       count += 1
     end
@@ -53,17 +53,17 @@ function is_inside_polygon(polygon::Vector{P}, p::P; extreme = Point(100_000.0, 
 end
 
 # This function needs to be tested -- not working as expected
-function is_intersecting_walls(outline::O,p::F) where {O<:AbstractOutlineObject,F<:AbstractFillingObject}
+function is_intersecting_walls(outline::O,fo::F) where {O<:AbstractOutlineObject,F<:AbstractFillingObject}
   for tw=1:length(outline.wlist)
-    pointOnWall = get_nearest_point(p.center,outline.wlist[tw])
+    pointOnWall = get_nearest_point(fo.center,outline.wlist[tw])
     if is_point_in_wall(pointOnWall,outline.wlist[tw])
-        Δx = pointOnWall.x - p.center.x
-        Δy = pointOnWall.y - p.center.y
-        dist = sqrt(Δx^2 + Δy^2)
+      Δx = pointOnWall.x - fo.center.x
+      Δy = pointOnWall.y - fo.center.y
+      dist = sqrt(Δx^2 + Δy^2)
 
-        if dist < p.radius
-          return true
-        end
+      if dist < fo.radius
+        return true
+      end
     end
   end
 
@@ -107,23 +107,8 @@ function get_orientation(p::Point{T},q::Point{T},r::Point{T}) where T<:Real
     return (val > 0) ? one(Int) : 2*one(Int) # clock- or counterclock-wise
 end
 
-"""
-  on_segment(p,q,r,buffer)
-
-Checks whether the point `r` is on the line segment from `p` to `q` with
-`buffer` padding, i.e. a rectangle. Returns a bool.
-"""
-function on_segment(p::Point{T},q::Point{T},r::Point{T},buffer::T) where T<:Real
-  maxX = (p.x >= r.x ? p.x : r.x) + buffer
-  minX = (p.x >= r.x ? r.x : p.x) - buffer
-  maxY = (p.y >= r.y ? p.y : r.y) + buffer
-  minY = (p.y >= r.y ? p.y : r.y) - buffer
-
-  if (q.x <= maxX && q.x >= minX && q.y <= maxY && q.y >= minY)
-      return true
-  else
-      return false
-  end
+function distance(a::Point{T},b::Point{T}) where T<:Real
+  return sqrt((a.x - b.x)^2 + (a.y - b.y)^2)
 end
 
 function get_nearest_point!(point::Point{T},node::Point{T},wall::LineWall) where T<:Real
@@ -168,10 +153,24 @@ Checks whether `point` is on `wall`. Different methods for handling
 circle and line walls. Returns a bool.
 """
 function is_point_in_wall(point::Point{T},wall::LineWall{T}) where T<:Real
-  return on_segment(wall.nodes[1],point,wall.nodes[2],wall.thickness/2)
+  return on_segment(wall.nodes[1],point,wall.nodes[2])
 end
 function is_point_in_wall(point::Point{T},wall::CircleWall{T}) where T<:Real
   cx = wall.center.x; cy=wall.center.y
   val = abs(wall.radius - sqrt((cx-point.x)^2 + (cy-point.y)^2))
   return isapprox(val, 0; atol=eps(Float64), rtol=0) ? true : false
+end
+
+"""
+  on_segment(p,q,r)
+
+Checks whether the point `q` is on the line segment from `p` to `r`.
+Returns a bool.
+"""
+function on_segment(p::Point{T},q::Point{T},r::Point{T}) where T<:Real
+  if -eps() < (distance(p, q) + distance(q, r) - distance(p, r)) < eps()
+    return true
+  else
+    return false
+  end
 end
