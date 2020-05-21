@@ -14,38 +14,34 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
     radiiArr = create_radiiArr(ideal_radius,rng,material.n_objects,outline)
     ps = PorousStructure(material,radiiArr,between_buffer)
 
+    placement = PlacementStatus()
+
     for ti=1:material.n_objects
-        xtemp = 0.0
-        ytemp = 0.0
-        safe_placement = false
-        intersection_walls_bool = false
-        attempt_ind = 1
-        while !(safe_placement)
+        reset_placement!(placement)
+
+        while !(placement.safe_placement)
             if log; print('\r',"attempting to place body #",ti,"/",ps.param.n_objects," ..."); end
             ps.xArr[ti],ps.yArr[ti] = choose_random_center(outline,rng)
             copyArraysToCenters!(ps,ti)
 
-            inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement = is_safe_placement(ti,ps,outline)
+            is_safe_placement!(placement,ti,ps,outline)
 
-            marked_for_shuffling = inside_bool && intersection_others_bool
             n_shuffles = 10
-            if marked_for_shuffling
+            if placement.marked_for_shuffling
                 for i=1:n_shuffles
                     shuffle_object!(ti,ps.olist,outline.wlist)
                 end
                 copyCentersToArrays!(ps::PorousStructure)
             end
 
-            inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement = is_safe_placement(ti,ps,outline)
+            is_safe_placement!(placement,ti,ps,outline)
 
-            attempt_ind += 1
-            if attempt_ind > material.n_objects*100
+            if placement.attempt_ind > material.n_objects*100
                 error("reached attempt threshold while trying to place body #$(ti)")
                 break
             end
-        end
-        if safe_placement && intersection_walls_bool
-            println(ti," is messed up")
+
+            update_attempt!(placement)
         end
     end
 

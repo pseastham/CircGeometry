@@ -177,3 +177,31 @@ struct PorousStructure{T}
         new{T}(param, olist, xArr, yArr,radiiArr)
     end
 end
+
+mutable struct PlacementStatus
+    inside::Bool
+    intersection_others::Bool
+    intersection_walls::Bool
+    safe_placement::Bool
+    marked_for_shuffling::Bool
+    attempt_ind::Int
+
+    function PlacementStatus()
+        return new(false,false,false,false,false,1)
+    end
+end
+
+function reset_placement!(placement::PlacementStatus)
+    placement.inside = false
+    placement.intersection_others = false
+    placement.intersection_walls = false
+    placement.safe_placement = false
+    placement.marked_for_shuffling = false
+    placement.attempt_ind = 1
+    nothing
+end
+
+function update_attempt!(placement::PlacementStatus)
+    placement.attempt_ind += 1
+    nothing
+end
