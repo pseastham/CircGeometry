@@ -1,12 +1,12 @@
 import Random: MersenneTwister
 
-```
+"""
     generate_porous_structure(outline,material,between_buffer;log=false)
 
 Workhorse of CircGeometry.jl. This function takes in an outline, 
 a material, and a between buffer percentage, and launches the 
 algorithm to fill in the outline with filling circles.
-```
+"""
 function generate_porous_structure(outline::O,material::MaterialParameters{T},between_buffer;log=false) where {O<:AbstractOutlineObject,T<:Real}
     ideal_radius = compute_ideal_radius(outline,material)
 
@@ -55,12 +55,12 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
     return ps
 end
 
-```
+"""
     compute_between_buffer(outline,material)
 
 This is a 'smart' algorithm for choosing the between_buffer so that
 the filling objects are more equally-spaced within the outline object. 
-```
+"""
 function compute_between_buffer(outline::O,material::MaterialParameters{T}) where {T<:Real,O<:AbstractOutlineObject}
     θstar = choose_θstar(material.expected_volume_fraction)
     ideal_radius = compute_ideal_radius(outline,material)
@@ -71,12 +71,12 @@ function compute_between_buffer(outline::O,material::MaterialParameters{T}) wher
     return maximum([between_buffer,1])
 end
 
-```
+"""
     compute_volume_fraction(ps,outline)
 
 Computes the actual volume fraction from a completed PorousStructure object within 
 an outline object. 
-```
+"""
 function compute_volume_fraction(ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
     true_area = compute_outline_area(outline)
     exp_area = 0.0

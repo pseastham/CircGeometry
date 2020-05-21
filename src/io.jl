@@ -87,12 +87,12 @@ function rescale_polygon!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
     nothing
 end
 
-```
+"""
     save_image(output_name,ps,outline)
 
 Saves image of outline and filled in objects to file 
 with name output_name (recommended file type: svg)
-```
+"""
 function save_image(output_name::String,ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
     # initialize figure
     p = plot(color=:black,aspect_ratio=1)
@@ -107,13 +107,13 @@ function save_image(output_name::String,ps::PorousStructure,outline::O) where O<
 
     savefig(p,output_name)
 end
-```
+"""
     save_image(output_name,circ_file,outline)
 
 Saves image of outline and filled in objects from
 circ file to file with name output_name (recommended file 
 type: svg)
-```
+"""
 function save_image(output_name::String,circ_file::String,outline::O) where O<:AbstractOutlineObject
     # load in circ object
     radiusArr, xArr, yArr = read_in_circ(circ_file)

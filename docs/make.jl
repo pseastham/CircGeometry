@@ -1,5 +1,7 @@
 using Documenter, CircGeometry
 
+push!(LOAD_PATH,"../src/")
+
 makedocs(;
     modules=[CircGeometry],
     format=Documenter.HTML(),

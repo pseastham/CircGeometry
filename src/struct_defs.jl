@@ -5,20 +5,20 @@ abstract type AbstractWall end
 """
     Point{T}
 
-Mutable struct that contains x and y coordinates. Each 
-x and y coordinates are of type T.
+Mutable struct that contains x and y coordinates. Each
+coordinate is of type T.
 """
 mutable struct Point{T}
     x::T
     y::T
 end
 
-```
+"""
     LineWall{T}
 
 Struct modeling a wall defined between two points. Each 
 point is of type T.
-```
+"""
 struct LineWall{T} <: AbstractWall
     nodes::Vector{Point{T}}     # 2 points, defining start and end
     thickness::T                
@@ -45,12 +45,12 @@ struct LineWall{T} <: AbstractWall
     LineWall(n1,n2) = LineWall(n1,n2,0.0)
 end
 
-```
+"""
     CircleWall{T}
 
 Struct modeling a wall defined as a circle, with a center
 and a radius. The base unit is of type T.
-```
+"""
 struct CircleWall{T} <: AbstractWall
     center::Point{T}          # point that defines center
     radius::T                 # radius of circle
@@ -61,11 +61,11 @@ struct CircleWall{T} <: AbstractWall
     end
 end
 
-```
+"""
     OutlineCircle{T}
 
 Struct modeling an outline circle. The base unit is of type T.
-```
+"""
 struct OutlineCircle{T} <: AbstractOutlineObject
     radius::T
     center::Point{T}
@@ -77,12 +77,12 @@ struct OutlineCircle{T} <: AbstractOutlineObject
     end
 end
 
-```
+"""
     OutlineRectangle{T}
 
 Struct modeling an outline rectangle, defined by 
 a lower left and upper right point. The base unit is of type T.
-```
+"""
 struct OutlineRectangle{T} <: AbstractOutlineObject
     p1::Point{T}                # lower left point
     p2::Point{T}                # upper right point
@@ -97,13 +97,13 @@ struct OutlineRectangle{T} <: AbstractOutlineObject
     end
 end
 
-```
+"""
     OutlinePolygon{T}
 
 Struct modeling an outline polygon. The polygon is 
 composed of an arbitrary number of points.
 The base unit is of type T.
-```
+"""
 struct OutlinePolygon{T} <: AbstractOutlineObject
     pList::Vector{Point{T}}
     p1_bound::Point{T}
@@ -144,25 +144,25 @@ struct FillingCircle{T} <: AbstractFillingObject
     buffer_percent::T
 end
 
-```
+"""
     MaterialParameters{T}
 
 Struct that contains the expected volume fraction of the
 outline, and the number of filling objects. The base unit 
 is of type T.
-```
+"""
 struct MaterialParameters{T}
     expected_volume_fraction::T
     n_objects::Int
 end
 
-```
+"""
     PorousStructure{T}
 
 The main product from CircGeometry.jl. Contains a 
 MaterialParameters object, a list of filling objects, and
 supporting array structures. The base unit is of type T.
-```
+"""
 struct PorousStructure{T}
     param::MaterialParameters{T}
     olist::Vector{FillingCircle{T}}

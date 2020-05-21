@@ -1,5 +1,9 @@
 # CircGeometry.jl Documentation
 
+```@meta
+CurrentModule = CircGeometry
+```
+
 ```@contents
 ```
 
@@ -11,24 +15,22 @@ MaterialParameters{T}
 OutlineCircle{T}
 OutlineRectangle{T}
 OutlinePolygon{T}
-
 ```
 
 ## Functions
 
 ```@docs
-generate_porous_structure(outline,material,between_buffer;log=false)
-compute_between_buffer(outline,material)
-compute_volume_fraction(ps,outline)
+generate_porous_structure
+compute_between_buffer
+compute_volume_fraction
 ```
 
 ## Input/Output
 
 ```@docs
-write_circ(file_name,ps)
-csv_to_polygon(file_name)
-save_image(output_name,ps,outline)
-save_image(output_name,circ_file,outline)
+write_circ
+csv_to_polygon
+save_image
 ```
 
 ## Index
