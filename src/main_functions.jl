@@ -1,5 +1,12 @@
 import Random: MersenneTwister
 
+```
+    generate_porous_structure(outline,material,between_buffer;log=false)
+
+Workhorse of CircGeometry.jl. This function takes in an outline, 
+a material, and a between buffer percentage, and launches the 
+algorithm to fill in the outline with filling circles.
+```
 function generate_porous_structure(outline::O,material::MaterialParameters{T},between_buffer;log=false) where {O<:AbstractOutlineObject,T<:Real}
     ideal_radius = compute_ideal_radius(outline,material)
 
@@ -52,14 +59,12 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
     return ps
 end
 
-function is_safe_placement(ti,ps,outline)
-    inside_bool = is_inside_outline(ps.olist[ti],outline)
-    intersection_others_bool = is_intersecting_others(ti,ps)
-    intersection_walls_bool = is_intersecting_walls(outline,ps.olist[ti])
-    safe_placement = inside_bool && !intersection_others_bool && !intersection_walls_bool
-    return inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement
-end
+```
+    compute_between_buffer(outline,material)
 
+This is a 'smart' algorithm for choosing the between_buffer so that
+the filling objects are more equally-spaced within the outline object. 
+```
 function compute_between_buffer(outline::O,material::MaterialParameters{T}) where {T<:Real,O<:AbstractOutlineObject}
     θstar = choose_θstar(material.expected_volume_fraction)
     ideal_radius = compute_ideal_radius(outline,material)
@@ -68,6 +73,30 @@ function compute_between_buffer(outline::O,material::MaterialParameters{T}) wher
     between_buffer = 100*(sqrt(area * θstar / (ideal_radius^2*pi*material.n_objects)) - one(T))
 
     return maximum([between_buffer,1])
+end
+
+```
+    compute_volume_fraction(ps,outline)
+
+Computes the actual volume fraction from a completed PorousStructure object within 
+an outline object. 
+```
+function compute_volume_fraction(ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
+    true_area = compute_outline_area(outline)
+    exp_area = 0.0
+    for ti=1:ps.param.n_objects
+        exp_area += 4*ps.olist[ti].radius^2
+    end
+
+    return exp_area/true_area 
+end
+
+function is_safe_placement(ti,ps,outline)
+    inside_bool = is_inside_outline(ps.olist[ti],outline)
+    intersection_others_bool = is_intersecting_others(ti,ps)
+    intersection_walls_bool = is_intersecting_walls(outline,ps.olist[ti])
+    safe_placement = inside_bool && !intersection_others_bool && !intersection_walls_bool
+    return inside_bool, intersection_others_bool, intersection_walls_bool, safe_placement
 end
 
 function choose_θstar(expected_volume_fraction::T) where T<:Real
@@ -141,16 +170,6 @@ function is_circle1_intersecting_circle2(fo1::F,fo2::F) where F<:FillingCircle
     distance = sqrt((fo2.center.x - fo1.center.x)^2 + (fo2.center.y - fo1.center.y)^2)
     upper_limit = (1 + (fo1.buffer_percent + fo2.buffer_percent)/100)*(fo1.radius + fo2.radius)
     return (distance < upper_limit ? true : false)
-end
-
-function compute_volume_fraction(ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
-    true_area = compute_outline_area(outline)
-    exp_area = 0.0
-    for ti=1:ps.param.n_objects
-        exp_area += 4*ps.olist[ti].radius^2
-    end
-
-    return exp_area/true_area 
 end
 
 function compute_outline_area(outline::OutlineCircle{T}) where T<:Real
