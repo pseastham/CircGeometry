@@ -17,14 +17,20 @@ z = Point(0.5+Float64(pi),1.5+Float64(pi))
 end
 
 a = Point(13.2,12.3)
-b = Point(1.0+eps(),1.0)
+b = Point(1.0+5*eps(),1.0)
+c = Point(-1.0,0.0)
 circlewall = CircGeometry.CircleWall(Point(0.0,0.0),1.0)
-linewall = CircGeometry.LineWall(Point(-1.0,1.0),Point(1.0,1.0))
+lwall1 = CircGeometry.LineWall(Point(-1.0,1.0),Point(1.0,1.0))
+lwall2 = CircGeometry.LineWall(Point(-1.0,-1.0),Point(-1.0,1.0))
 @testset "is_point_in_wall tests" begin
     @test CircGeometry.is_point_in_wall(q1,circlewall) == true
     @test CircGeometry.is_point_in_wall(p2,circlewall) == false
     @test CircGeometry.is_point_in_wall(a,circlewall) == false
-    @test CircGeometry.is_point_in_wall(q1,linewall) == true
-    @test CircGeometry.is_point_in_wall(p1,linewall) == false
-    @test CircGeometry.is_point_in_wall(b,linewall) == false
+
+    @test CircGeometry.is_point_in_wall(q1,lwall1) == true
+    @test CircGeometry.is_point_in_wall(p1,lwall1) == false
+    @test CircGeometry.is_point_in_wall(b,lwall1) == false
+
+    @test CircGeometry.is_point_in_wall(c,lwall2) == true
+    @test CircGeometry.is_point_in_wall(p1,lwall2) == false
 end
