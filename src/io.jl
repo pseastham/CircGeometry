@@ -236,7 +236,7 @@ function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T;fill=:b
 
     plot!(p,
         x .+ radius*cos.(θarr),y .+ radius*sin.(θarr),
-        seriestype=[:shape,],lw=0.5,c=fill,
+        seriestype=[:shape,],lw=0.0,c=fill,
         linecolor=:black,legend=false,
         fillalpha=alpha)
 
