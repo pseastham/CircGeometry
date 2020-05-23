@@ -178,7 +178,7 @@ function save_image(output_name::String,circ_file::String,outline::O;fill=:blue)
     savefig(p,output_name)
 end
 
-function save_image(output_name::String,psArr::Vector{PorousStructure},cArr)
+function save_image(output_name::String,psArr::Vector{PorousStructure{T}},cArr) where T<:Real
     # initialize figure
     p = plot(color=:black,aspect_ratio=1)
 
