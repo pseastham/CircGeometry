@@ -179,7 +179,7 @@ function save_image(output_name::String,circ_file::String,outline::O;fill=:blue)
     savefig(p,output_name)
 end
 
-function save_image(output_name::String,psArr::Vector{PorousStructure{T}},cArr) where T<:Real
+function save_image(output_name::String,psArr::Vector{PorousStructure{T}},cArr;alpha=0.2) where T<:Real
     # initialize figure
     p = plot(color=:black,aspect_ratio=1)
 
@@ -187,7 +187,7 @@ function save_image(output_name::String,psArr::Vector{PorousStructure{T}},cArr) 
     for tk=1:length(psArr)
         for ti=1:psArr[tk].param.n_objects
             plot_circle!(
-                p,psArr[tk].radiiArr[ti],psArr[tk].xArr[ti],psArr[tk].yArr[ti];fill = cArr[tk])
+                p,psArr[tk].radiiArr[ti],psArr[tk].xArr[ti],psArr[tk].yArr[ti];fill = cArr[tk],alpha=alpha)
         end
     end
 
@@ -230,7 +230,7 @@ end
 Adds a circle to plot object `p`. Circle has center (x,y). Has option
 to select fill-in color
 """
-function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T;fill=:blue) where T<:Real
+function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T;fill=:blue,alpha=0.2) where T<:Real
     nθ = 40
     θarr = 0:2*pi/(nθ-1):2*pi
 
@@ -238,7 +238,7 @@ function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T;fill=:b
         x .+ radius*cos.(θarr),y .+ radius*sin.(θarr),
         seriestype=[:shape,],lw=0.5,c=fill,
         linecolor=:black,legend=false,
-        fillalpha=0.2)
+        fillalpha=alpha)
 
     nothing
 end
