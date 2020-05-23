@@ -92,6 +92,7 @@ function translate!(ps::PorousStructure,xval::T,yval::T) where T<:Real
         ps.olist[ti].center.x += xval
         ps.olist[ti].center.y += yval
     end
+    copyCentersToArrays!(ps)
     nothing
 end
 
