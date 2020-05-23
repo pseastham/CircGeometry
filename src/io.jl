@@ -87,13 +87,60 @@ function rescale_polygon!(xArr::Vector{T},yArr::Vector{T}) where T<:Real
     nothing
 end
 
+function translate!(ps::PorousStructure,xval::T,yval::T) where T<:Real
+    for ti=1:length(ps.olist)
+        ps.olist[ti].center.x += xval
+        ps.olist[ti].center.y += yval
+    end
+    nothing
+end
+
+function translate!(outline::OutlineCircle,xval::T,yval::T) where T<:Real
+    outline.center.x += xval;
+    outline.center.y += yval;
+    nothing
+end
+function translate!(outline::OutlineRectangle,xval::T,yval::T) where T<:Real
+    outline.p1.x += xval;
+    outline.p1.y += yval;
+    outline.p2.x += xval;
+    outline.p2.y += yval;
+    nothing
+end
+function translate!(outline::OutlinePolygon,xval::T,yval::T) where T<:Real
+    for ti=1:length(outline.pList)
+        outline.pList[ti].x += xval;
+        outline.pList[ti].y += yval;
+    end
+    nothing
+end
+
+"""
+    save_image(output_name,ps;fill=:blue)
+
+Saves image of filled in objects to file 
+with name output_name (recommended file type: svg)
+with option to choose fill color
+"""
+function save_image(output_name::String,ps::PorousStructure;fill=:blue)
+    # initialize figure
+    p = plot(color=:black,aspect_ratio=1)
+
+    # plot circles
+    for ti=1:ps.param.n_objects
+        plot_circle!(p,ps.radiiArr[ti],ps.xArr[ti],ps.yArr[ti])
+    end
+
+    savefig(p,output_name)
+end
 """
     save_image(output_name,ps,outline)
 
 Saves image of outline and filled in objects to file 
 with name output_name (recommended file type: svg)
+with option to choose fill color
 """
-function save_image(output_name::String,ps::PorousStructure,outline::O) where O<:AbstractOutlineObject
+function save_image(output_name::String,ps::PorousStructure,outline::O;fill=:blue) where O<:AbstractOutlineObject
     # initialize figure
     p = plot(color=:black,aspect_ratio=1)
 
@@ -112,9 +159,9 @@ end
 
 Saves image of outline and filled in objects from
 circ file to file with name output_name (recommended file 
-type: svg)
+type: svg) with option to choose fill color
 """
-function save_image(output_name::String,circ_file::String,outline::O) where O<:AbstractOutlineObject
+function save_image(output_name::String,circ_file::String,outline::O;fill=:blue) where O<:AbstractOutlineObject
     # load in circ object
     radiusArr, xArr, yArr = read_in_circ(circ_file)
 
@@ -124,9 +171,22 @@ function save_image(output_name::String,circ_file::String,outline::O) where O<:A
     # plot circles
     n_objects = length(radiusArr)
     for ti=1:n_objects
-        plot_circle!(p,radiusArr[ti],xArr[ti],yArr[ti])
+        plot_circle!(p,radiusArr[ti],xArr[ti],yArr[ti];fill=fill)
     end
     plot_outline!(p,outline)
+
+    savefig(p,output_name)
+end
+
+function save_image(output_name::String,psArr::Vector{PorousStructure},cArr)
+    # initialize figure
+    p = plot(color=:black,aspect_ratio=1)
+
+    # plot circles
+    for tk=1:length(psArr)
+        for ti=psArr[tk].param.n_objects
+        plot_circle!(p,psArr[tk].radiiArr[ti],psArr[tk].xArr[ti],psArr[tk].yArr[ti];fill = cArr[tk])
+    end
 
     savefig(p,output_name)
 end
@@ -162,17 +222,18 @@ function read_in_circ(file_input::String)
 end
 
 """
-    plot_circle!(p,radius,x,y)
+    plot_circle!(p,radius,x,y;color=:blue)
 
-Adds a circle to plot object `p`. Circle has center (x,y).
+Adds a circle to plot object `p`. Circle has center (x,y). Has option
+to select fill-in color
 """
-function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T) where T<:Real
+function plot_circle!(p::Plots.Plot{Plots.GRBackend},radius::T,x::T,y::T;fill=:blue) where T<:Real
     nθ = 40
     θarr = 0:2*pi/(nθ-1):2*pi
 
     plot!(p,
         x .+ radius*cos.(θarr),y .+ radius*sin.(θarr),
-        seriestype=[:shape,],lw=0.5,c=:blue,
+        seriestype=[:shape,],lw=0.5,c=fill,
         linecolor=:black,legend=false,
         fillalpha=0.2)
 
