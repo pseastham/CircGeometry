@@ -185,7 +185,8 @@ function save_image(output_name::String,psArr::Vector{PorousStructure},cArr)
     # plot circles
     for tk=1:length(psArr)
         for ti=psArr[tk].param.n_objects
-        plot_circle!(p,psArr[tk].radiiArr[ti],psArr[tk].xArr[ti],psArr[tk].yArr[ti];fill = cArr[tk])
+            plot_circle!(p,psArr[tk].radiiArr[ti],psArr[tk].xArr[ti],psArr[tk].yArr[ti];fill = cArr[tk])
+        end
     end
 
     savefig(p,output_name)
