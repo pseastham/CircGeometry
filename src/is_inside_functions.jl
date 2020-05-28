@@ -107,10 +107,6 @@ function get_orientation(p::Point{T},q::Point{T},r::Point{T}) where T<:Real
     return (val > 0) ? one(Int) : 2*one(Int) # clock- or counterclock-wise
 end
 
-function distance(a::Point{T},b::Point{T}) where T<:Real
-  return sqrt((a.x - b.x)^2 + (a.y - b.y)^2)
-end
-
 function get_nearest_point!(point::Point{T},node::Point{T},wall::LineWall) where T<:Real
   px=node.x; py=node.y
 
@@ -173,4 +169,8 @@ function on_segment(p::Point{T},q::Point{T},r::Point{T}) where T<:Real
   else
     return false
   end
+end
+
+function distance(a::Point{T},b::Point{T}) where T<:Real
+  return sqrt((a.x - b.x)^2 + (a.y - b.y)^2)
 end
