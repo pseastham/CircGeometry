@@ -13,7 +13,8 @@ export MaterialParameters,
        generate_porous_structure,
        compute_between_buffer,
        compute_volume_fraction,
-       Point
+       Point,
+       translate!
 
 export write_circ,
        csv_to_polygon,

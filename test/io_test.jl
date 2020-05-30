@@ -8,11 +8,15 @@ using CircGeometry, Test
     radius = 1.5
     center = Point(-0.5,1.0)
     outline = OutlineCircle(radius,center)
+    translate!(outline,1.0,-1.2)
 
     between_buffer = compute_between_buffer(outline,material)
     ps = generate_porous_structure(outline,material,between_buffer)
+
+    translate!(ps,1.0,-1.2)
     write_circ("test-data/test_file.circ",ps)
     save_image("test-data/test_file.svg","test-data/test_file.circ",outline)
+    save_image("test-data/test_file2.svg",ps)
 end
 
 @testset "csv_to_polygon test" begin
@@ -30,3 +34,4 @@ end
 # clean up for next test
 rm("test-data/test_file.circ")
 rm("test-data/test_file.svg")
+rm("test-data/test_file2.svg")

@@ -28,6 +28,8 @@ end
     between_buffer = compute_between_buffer(outline,material)
     ps = generate_porous_structure(outline,material,between_buffer;log=false)
 
+    translate!(outline,1.0,-1.2)
+    
     write_circ("rectangle.circ",ps)
     save_image("rectangle.svg",ps,outline)
 end
@@ -42,6 +44,8 @@ end
 
     between_buffer = compute_between_buffer(outline,material)
     ps = generate_porous_structure(outline,material,between_buffer;log=false)
+
+    translate!(outline,1.0,-1.2)
 
     write_circ("car.circ",ps)
     save_image("car.svg",ps,outline)

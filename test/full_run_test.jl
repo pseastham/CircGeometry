@@ -10,6 +10,8 @@ outline = OutlineCircle(1.0,Point(0.0,0.0))
 ps = generate_porous_structure(outline,material,between_buffer;log=false)
 vf_exp = compute_volume_fraction(ps,outline)
 
+CircGeometry.copyArraysToCenters!(ps)
+
 # test rectangle outline
 outline = OutlineRectangle(Point(-2.0,0.0),Point(1.0,2.0))
 @test CircGeometry.compute_outline_area(outline) == 6.0
