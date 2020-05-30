@@ -52,7 +52,6 @@ function is_inside_polygon(polygon::Vector{P}, p::P; extreme = Point(100_000.0, 
   return (isodd(count) ? true : false)
 end
 
-# This function needs to be tested -- not working as expected
 function is_intersecting_walls(outline::O,fo::F) where {O<:AbstractOutlineObject,F<:AbstractFillingObject}
   for tw=1:length(outline.wlist)
     pointOnWall = get_nearest_point(fo.center,outline.wlist[tw])
@@ -71,7 +70,7 @@ function is_intersecting_walls(outline::O,fo::F) where {O<:AbstractOutlineObject
 end
 
 """ 
-  do_intersection(p1,q1,p2,q2)
+  do_intersect(p1,q1,p2,q2)
 
 Checks if the line segment p1 to q1 intersects line from p2 to q2. Returns
 a bool.
