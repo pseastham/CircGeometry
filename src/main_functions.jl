@@ -8,6 +8,8 @@ a material, and a between buffer percentage, and launches the
 algorithm to fill in the outline with filling circles.
 """
 function generate_porous_structure(outline::O,material::MaterialParameters{T},between_buffer;log=false) where {O<:AbstractOutlineObject,T<:Real}
+    check_vf(material.expected_volume_fraction)
+
     ideal_radius = compute_ideal_radius(outline,material)
 
     rng = MersenneTwister()
@@ -38,7 +40,6 @@ function generate_porous_structure(outline::O,material::MaterialParameters{T},be
 
             if placement.attempt_ind > material.n_objects*100
                 error("reached attempt threshold while trying to place body #$(ti)")
-                break
             end
 
             update_attempt!(placement)

@@ -163,7 +163,7 @@ Checks whether the point `q` is on the line segment from `p` to `r`.
 Returns a bool.
 """
 function on_segment(p::Point{T},q::Point{T},r::Point{T}) where T<:Real
-  if -eps() < (distance(p, q) + distance(q, r) - distance(p, r)) < eps()
+  if abs(distance(p, q) + distance(q, r) - distance(p, r)) < eps()
     return true
   else
     return false

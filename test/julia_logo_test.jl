@@ -7,7 +7,8 @@ julia_red = :brown3
 julia_purple = :mediumorchid3
 colors = [julia_red,julia_purple,julia_green]
 
-vf = 0.5
+
+vf = 0.2     #vf = 0.5 for real log (0.5 sometimes times-out with 80 bodies)
 n_bodies = 80
 material = MaterialParameters(vf,n_bodies)
 

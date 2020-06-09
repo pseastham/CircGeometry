@@ -38,4 +38,11 @@ end
 # test for on_segment where point is colinear with other two points
 polygon = [Point(0.0,0.0),Point(2.0,0.0),Point(2.0,1.0)]
 point = Point(1.0,0.0)
-CircGeometry.is_inside_polygon(polygon, point; extreme = Point(100_000.0, point.y))
+@test CircGeometry.is_inside_polygon(polygon, point; extreme = Point(100_000.0, point.y)) == true
+
+# check on_segment
+@testset "on_segment tests" begin 
+    @test CircGeometry.on_segment(Point(0.0,0.0),Point(1.0,0.0),Point(2.0,0.0)) == true
+    @test CircGeometry.on_segment(Point(0.0,0.0),Point(1.0,0.1),Point(2.0,0.0)) == false
+    @test CircGeometry.on_segment(Point(0.0,0.0),Point(3.0,0.0),Point(2.0,0.0)) == false
+end
