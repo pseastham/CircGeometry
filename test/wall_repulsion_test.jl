@@ -1,4 +1,4 @@
-using CircGeometry
+using CircGeometry, Test
 
 center = Point(-0.9,0.0)
 p1 = Point(-1.0,-1.0)

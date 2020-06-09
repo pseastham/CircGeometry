@@ -34,3 +34,8 @@ lwall2 = CircGeometry.LineWall(Point(-1.0,-1.0),Point(-1.0,1.0))
     @test CircGeometry.is_point_in_wall(c,lwall2) == true
     @test CircGeometry.is_point_in_wall(p1,lwall2) == false
 end
+
+# test for on_segment where point is colinear with other two points
+polygon = [Point(0.0,0.0),Point(2.0,0.0),Point(2.0,1.0)]
+point = Point(1.0,0.0)
+CircGeometry.is_inside_polygon(polygon, point; extreme = Point(100_000.0, point.y))
